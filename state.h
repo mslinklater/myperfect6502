@@ -13,11 +13,11 @@ typedef struct {
 	nodenum_t vcc;
 
 	/* everything that describes a node */
-	bitmap_t *pPullupNodesBitmap;
-	bitmap_t *pPulldownNodesBitmap;
-	bitmap_t *nodes_value;
+	bitmap_t *pPullupNodesBitmap;		// which ndoes are pullup
+	bitmap_t *pPulldownNodesBitmap;		// which nodes are pulldown
+	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
 
-	nodenum_t **nodes_gates;
+	nodenum_t **nodes_gates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 
 	c1c2_t *nodes_c1c2s;
 

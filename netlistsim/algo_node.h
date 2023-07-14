@@ -36,12 +36,12 @@ get_nodes_pulldown(state_t *state, transnum_t t)
 static inline void
 set_nodes_value(state_t *state, transnum_t t, BOOL s)
 {
-	set_bitmap(state->nodes_value, t, s);
+	set_bitmap(state->pNodesStateBitmap, t, s);
 }
 
 static inline BOOL
 get_nodes_value(state_t *state, transnum_t t)
 {
-	return get_bitmap(state->nodes_value, t);
+	return get_bitmap(state->pNodesStateBitmap, t);
 }
 

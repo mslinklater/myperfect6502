@@ -34,8 +34,10 @@ listout_clear(state_t *state)
 static inline void
 listout_add(state_t *state, nodenum_t i)
 {
-	if (!get_bitmap(state->listout_bitmap, i)) {
+	if (!get_bitmap(state->listout_bitmap, i)) 
+	{
 		state->listout.list[state->listout.count++] = i;
+		
 		set_bitmap(state->listout_bitmap, i, 1);
 	}
 }

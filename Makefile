@@ -1,7 +1,7 @@
-OBJS=perfect6502.o netlist_sim.o
+OBJS=perfect6502.o netlistsim/netlist_sim.o
 OBJS+=cbmbasic/cbmbasic.o cbmbasic/runtime.o cbmbasic/runtime_init.o cbmbasic/plugin.o cbmbasic/console.o cbmbasic/emu.o
 ;OBJS+=measure.o
-CFLAGS=-Werror -Wall -O0 -g -Wno-unused-but-set-variable
+CFLAGS=-Werror -Wall -O0 -g -Wno-unused-but-set-variable -I. -Inetlistsim
 CC=cc
 
 all: cbmbasic

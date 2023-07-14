@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 #include "types.h"
-#include "netlist_sim.h"
+#include "netlistsim/netlist_sim.h"
 /* nodes & transistors */
 #include "netlist_6502.h"
 
@@ -201,7 +201,7 @@ initAndResetChip()
 void
 destroyChip(void *state)
 {
-    destroyNodesAndTransistors(state);
+    DestroyNodesAndTransistors(state);
 }
 
 /************************************************************

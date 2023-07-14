@@ -19,7 +19,7 @@ main()
 		if (clk)
 			handle_monitor(state);
 
-//		chipStatus(state);
+		chipStatus(state);
 		//if (!(cycle % 1000)) printf("%d\n", cycle);
 	};
 }

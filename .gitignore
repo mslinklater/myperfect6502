@@ -1,0 +1,3 @@
+*.o
+netlistsim/*.o
+cbmbasic/cbmbasic

@@ -17,12 +17,12 @@ typedef struct {
 	bitmap_t *pPulldownNodesBitmap;		// which nodes are pulldown
 	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
 
-	nodenum_t **nodes_gates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
+	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 
 	c1c2_t *nodes_c1c2s;
 
-	count_t *nodes_gatecount;
-	count_t *nodes_c1c2offset;
+	count_t *pNodeGateCount;
+	count_t *pNodeC1C2Offset;
 
 	nodenum_t *nodes_dependants;
 	nodenum_t *nodes_left_dependants;
@@ -33,15 +33,16 @@ typedef struct {
 	nodenum_t *transistors_gate;
 	nodenum_t *transistors_c1;
 	nodenum_t *transistors_c2;
-	bitmap_t *transistors_on;
+	bitmap_t *pBitmapOnTransistors;
+
+	// QUESTION - Can we have more list to multi-thread ?
 
 	/* the nodes we are working with */
-	nodenum_t *list1;
-	list_t listin;
+	NodeList listIn;
 
 	/* the indirect nodes we are collecting for the next run */
-	nodenum_t *list2;
-	list_t listout;
+	NodeList listOut;
+	nodenum_t* pNodeList[2];
 
 	bitmap_t *listout_bitmap;
 
@@ -50,11 +51,11 @@ typedef struct {
 	bitmap_t *groupbitmap;
 
 	enum {
-		contains_nothing,
-		contains_hi,
-		contains_pullup,
-		contains_pulldown,
-		contains_vcc,
-		contains_vss
-	} group_contains_value;
+		kNothing,
+		kHigh,
+		kPullup,
+		kPulldown,
+		kVcc,
+		kVss
+	} EGroupContainsValue;
 } state_t;

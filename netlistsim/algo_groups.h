@@ -13,17 +13,17 @@
  */
 
 static inline void
-group_clear(state_t *state)
+GroupClear(state_t *pState)
 {
-	state->groupcount = 0;
-	BitmapClear(state->groupbitmap, state->numNodes);
+	pState->groupcount = 0;
+	BitmapClear(pState->groupbitmap, pState->numNodes);
 }
 
 static inline void
 group_add(state_t *state, nodenum_t i)
 {
 	state->group[state->groupcount++] = i;
-	set_bitmap(state->groupbitmap, i, 1);
+	BitmapSet(state->groupbitmap, i, 1);
 }
 
 static inline nodenum_t
@@ -35,7 +35,7 @@ group_get(state_t *state, count_t n)
 static inline BOOL
 group_contains(state_t *state, nodenum_t el)
 {
-	return get_bitmap(state->groupbitmap, el);
+	return BitmapGet(state->groupbitmap, el);
 }
 
 static inline count_t

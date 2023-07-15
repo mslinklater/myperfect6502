@@ -29,7 +29,7 @@ typedef struct {
 typedef struct {
 	nodenum_t *list;
 	count_t count;
-} list_t;
+} NodeList;
 
 /* a transistor from the point of view of one of the connected nodes */
 typedef struct {

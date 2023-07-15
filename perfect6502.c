@@ -164,11 +164,13 @@ step(void *state)
 }
 
 void *
-initAndResetChip()
+InitAndResetChip()
 {
 	/* set up data structures for efficient emulation */
 	nodenum_t nodes = sizeof(netlist_6502_node_is_pullup)/sizeof(*netlist_6502_node_is_pullup);
+
 	nodenum_t transistors = sizeof(netlist_6502_transdefs)/sizeof(*netlist_6502_transdefs);
+	
 	void *state = SetupNodesAndTransistors(netlist_6502_transdefs,
 										   netlist_6502_node_is_pullup,
 										   nodes,
@@ -218,9 +220,10 @@ chipStatus(void *state)
 	uint8_t d = readDataBus(state);
 	BOOL r_w = IsNodeHigh(state, rw);
 
-	printf("halfcyc:%d phi0:%d AB:%04X D:%02X RnW:%d PC:%04X A:%02X X:%02X Y:%02X SP:%02X P:%02X IR:%02X",
-		   cycle,
-		   clk,
+	if (clk) {
+		printf("%d AB:%04X D:%02X RnW:%d PC:%04X A:%02X X:%02X Y:%02X SP:%02X P:%02X IR:%02X",
+		   cycle/2,
+		  // clk,
 		   a,
 		   d,
 		   r_w,
@@ -232,11 +235,10 @@ chipStatus(void *state)
 		   readP(state),
 		   readIR(state));
 
-	if (clk) {
 		if (r_w)
-		printf(" R$%04X=$%02X", a, memory[a]);
+			printf(" R$%04X=$%02X", a, memory[a]);
 		else
-		printf(" W$%04X=$%02X", a, d);
+			printf(" W$%04X=$%02X", a, d);
+		printf("\n");
 	}
-	printf("\n");
 }

@@ -19,20 +19,23 @@ typedef struct {
 
 	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 
-	c1c2_t *nodes_c1c2s;
+	c1c2_t *pNodeC1C2s;
 
 	count_t *pNodeGateCount;
+
+	// Offsets in to the C1C2s array
 	count_t *pNodeC1C2Offset;
 
 	nodenum_t *nodes_dependants;
 	nodenum_t *nodes_left_dependants;
+
 	nodenum_t **nodes_dependant;
 	nodenum_t **nodes_left_dependant;
 
 	/* everything that describes a transistor */
-	nodenum_t *transistors_gate;
-	nodenum_t *transistors_c1;
-	nodenum_t *transistors_c2;
+	nodenum_t *pTransistorsGate;
+	nodenum_t *pTransistorsC1;
+	nodenum_t *pTransistorsC2;
 	bitmap_t *pBitmapOnTransistors;
 
 	// QUESTION - Can we have more list to multi-thread ?
@@ -48,7 +51,7 @@ typedef struct {
 
 	nodenum_t *pGroupNodes;
 	count_t groupCount;
-	bitmap_t *groupbitmap;
+	bitmap_t *pBitmapGroup;
 
 	enum {
 		kNothing,

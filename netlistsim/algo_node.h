@@ -10,37 +10,37 @@
  */
 
 static inline void
-set_nodes_pullup(state_t *state, transnum_t t, BOOL s)
+SetNodePullup(state_t *state, transnum_t t, BOOL s)
 {
 	BitmapSet(state->pPullupNodesBitmap, t, s);
 }
 
 static inline BOOL
-get_nodes_pullup(state_t *state, transnum_t t)
+GetNodePullup(state_t *state, transnum_t t)
 {
 	return BitmapGet(state->pPullupNodesBitmap, t);
 }
 
 static inline void
-set_nodes_pulldown(state_t *state, transnum_t t, BOOL s)
+SetNodePulldown(state_t *state, transnum_t t, BOOL s)
 {
 	BitmapSet(state->pPulldownNodesBitmap, t, s);
 }
 
 static inline BOOL
-get_nodes_pulldown(state_t *state, transnum_t t)
+GetNodePulldown(state_t *state, transnum_t t)
 {
 	return BitmapGet(state->pPulldownNodesBitmap, t);
 }
 
 static inline void
-set_nodes_value(state_t *state, transnum_t t, BOOL s)
+SetNodeState(state_t *state, transnum_t t, BOOL s)
 {
 	BitmapSet(state->pNodesStateBitmap, t, s);
 }
 
 static inline BOOL
-get_nodes_value(state_t *state, transnum_t t)
+GetNodeState(state_t *state, transnum_t t)
 {
 	return BitmapGet(state->pNodesStateBitmap, t);
 }

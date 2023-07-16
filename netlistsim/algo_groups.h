@@ -19,32 +19,26 @@ GroupClear(state_t *pState)
 {
 	TRACE_PUSH("GroupClear");
 	pState->groupCount = 0;
-	BitmapClear(pState->groupbitmap, pState->numNodes);
+	BitmapClear(pState->pBitmapGroup, pState->numNodes);
 	TRACE_POP();
 }
 
 static inline void
-group_add(state_t *state, nodenum_t i)
+GroupAdd(state_t *state, nodenum_t i)
 {
 	state->pGroupNodes[state->groupCount++] = i;
-	BitmapSet(state->groupbitmap, i, 1);
+	BitmapSet(state->pBitmapGroup, i, 1);
 }
 
 static inline nodenum_t
-group_get(state_t *state, count_t n)
+GroupGet(state_t *state, count_t n)
 {
 	return state->pGroupNodes[n];
 }
 
 static inline BOOL
-group_contains(state_t *state, nodenum_t el)
+GroupContains(state_t *state, nodenum_t el)
 {
-	return BitmapGet(state->groupbitmap, el);
+	return BitmapGet(state->pBitmapGroup, el);
 }
-
-//static inline count_t
-//group_count(state_t *state)
-//{
-//	return state->groupCount;
-//}
 

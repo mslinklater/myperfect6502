@@ -17,10 +17,9 @@ unsigned short PC;
 int N, Z, C;
 
 void
-init_monitor(char* filename, int address)
+init_monitor(char* filename, int address, int isBasic)
 {
 	FILE *f;
-	//f = fopen("cbmbasic/cbmbasic.bin", "r");
 	f = fopen(filename, "r");
 	fseek(f, 0L, SEEK_END);
 	int fileSize = ftell(f);
@@ -33,26 +32,28 @@ init_monitor(char* filename, int address)
 	 * we will put code there later that loads
 	 * the CPU state and returns
 	 */
-	#if 1
-	for (unsigned short addr = 0xFF90; addr < 0xFFF3; addr += 3) {
-		memory[addr+0] = 0x4C;
-		memory[addr+1] = 0x00;
-		memory[addr+2] = 0xF8;
-	}
+	if(isBasic)
+	{
+		for (unsigned short addr = 0xFF90; addr < 0xFFF3; addr += 3) {
+			memory[addr+0] = 0x4C;
+			memory[addr+1] = 0x00;
+			memory[addr+2] = 0xF8;
+		}
 
-	/*
-	 * cbmbasic scribbles over 0x01FE/0x1FF, so we can't start
-	 * with a stackpointer of 0 (which seems to be the state
-	 * after a RESET), so RESET jumps to 0xF000, which contains
-	 * a JSR to the actual start of cbmbasic
-	 */
-	memory[0xf000] = 0x20;
-	memory[0xf001] = 0x94;
-	memory[0xf002] = 0xE3;
-	
-	memory[0xfffc] = 0x00;
-	memory[0xfffd] = 0xF0;
-	#endif
+		/*
+		* cbmbasic scribbles over 0x01FE/0x1FF, so we can't start
+		* with a stackpointer of 0 (which seems to be the state
+		* after a RESET), so RESET jumps to 0xF000, which contains
+		* a JSR to the actual start of cbmbasic
+		*/
+		memory[0xf000] = 0x20;
+		memory[0xf001] = 0x94;
+		memory[0xf002] = 0xE3;
+		
+		memory[0xfffc] = 0x00;
+		memory[0xfffd] = 0xF0;
+
+	}
 }
 
 void

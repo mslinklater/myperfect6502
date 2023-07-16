@@ -8,15 +8,19 @@ int
 main( int argv, char** argc)
 {
 	int clk = 0;
+	int address = atoi(argc[2]);
 	int numClocksToRun = atoi(argc[3]);
+	int isBasic = atoi(argc[4]);
 
 	void* pState = InitAndResetChip();
 
 	/* set up memory for user program */
-	init_monitor(argc[1], atoi(argc[2]));
+	init_monitor(argc[1], address, isBasic);
+
+	static int i;
 
 	/* emulate the 6502! */
-	for (int i=0 ; i < numClocksToRun ; ++i) 
+	for (i=0 ; i < numClocksToRun ; ++i) 
 	{
 		step(pState);
 		clk = !clk;

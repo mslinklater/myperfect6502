@@ -14,6 +14,7 @@
 #include "algo_transistor.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
+#include "trace.h"
 
 // creates a c1c2_t structure
 static inline c1c2_t
@@ -42,6 +43,7 @@ c1c2(transnum_t tn, nodenum_t n)
 static inline void
 AddNodeToGroup(state_t *state, nodenum_t n)
 {
+	TRACE_PUSH("AddNodeToGroup");
 	/*
 	 * We need to stop at vss and vcc, otherwise we'll revisit other groups
 	 * with the same value - just because they all derive their value from
@@ -50,6 +52,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	if (n == state->vss) 
 	{
 		state->EGroupContainsValue = kVss;
+		TRACE_POP();
 		return;
 	}
 	
@@ -59,11 +62,13 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 		{
 			state->EGroupContainsValue = kVcc;
 		}
+		TRACE_POP();
 		return;
 	}
 
 	if (group_contains(state, n))
 	{
+		TRACE_POP();
 		return;
 	}
 
@@ -95,16 +100,19 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 			AddNodeToGroup(state, c.other_node);
 		}
 	}
+	TRACE_POP();
 }
 
 static inline void
 AddAllNodesToGroup(state_t *state, nodenum_t node)
 {
+	TRACE_PUSH("AddAllNodesToGroup");
 	GroupClear(state);
 
 	state->EGroupContainsValue = kNothing;
 
 	AddNodeToGroup(state, node);
+	TRACE_POP();
 }
 
 static inline BOOL
@@ -127,6 +135,7 @@ GetGroupValue(state_t *state)
 static inline void
 RecalcNode(state_t *state, nodenum_t node)
 {
+	TRACE_PUSH("RecalcNode");
 	/*
 	 * get all nodes that are connected through
 	 * transistors, starting with this one
@@ -142,7 +151,7 @@ RecalcNode(state_t *state, nodenum_t node)
 	 * - collect all nodes behind toggled transistors
 	 *   for the next run
 	 */
-	for (count_t i = 0; i < group_count(state); i++) 
+	for (count_t i = 0; i < state->groupCount; i++) 
 	{
 		nodenum_t nn = group_get(state, i);
 
@@ -160,25 +169,29 @@ RecalcNode(state_t *state, nodenum_t node)
 			{
 				for (count_t g = 0; g < state->nodes_left_dependants[nn]; g++) 
 				{
-					listout_add(state, state->nodes_left_dependant[nn][g]);
+					ListOutAdd(state, state->nodes_left_dependant[nn][g]);
 				}
 			} 
 			else 
 			{
 				for (count_t g = 0; g < state->nodes_dependants[nn]; g++) 
 				{
-					listout_add(state, state->nodes_dependant[nn][g]);
+					ListOutAdd(state, state->nodes_dependant[nn][g]);
 				}
 			}
 		}
 	}
+	TRACE_POP();
 }
 
 void
 RecalcNodeList(state_t *state)
 {
+	TRACE_PUSH("RecalcNodeList");
+
 	for (int j = 0; j < 100; j++) 
 	{	/* loop limiter */
+		TRACE_PUSH("RecalcNodeList - Inner");
 		/*
 		 * make the secondary list our primary list, use
 		 * the data storage of the primary list as the
@@ -186,12 +199,13 @@ RecalcNodeList(state_t *state)
 		 */
 		ListsSwitch(state);
 
-		if (!listin_count(state))
+		if (!ListInCount(state))
 		{
+			TRACE_POP();
 			break;
 		}
 
-		listout_clear(state);
+		ListOutClear(state);
 
 		/*
 		 * for all nodes, follow their paths through
@@ -200,13 +214,17 @@ RecalcNodeList(state_t *state)
 		 * all transistors controlled by this path, collecting
 		 * all nodes that changed because of it for the next run
 		 */
-		for (count_t i = 0; i < listin_count(state); i++) 
+		for (count_t i = 0; i < ListInCount(state); i++) 
 		{
 			nodenum_t n = listin_get(state, i);
 			RecalcNode(state, n);
 		}
+		TRACE_POP();
 	}
-	listout_clear(state);
+	ListOutClear(state);
+	TRACE_POP();
+	int bp=0;
+	bp++;
 }
 
 /************************************************************
@@ -239,7 +257,7 @@ add_nodes_left_dependant(state_t *state, nodenum_t a, nodenum_t b)
 }
 
 state_t *
-SetupNodesAndTransistors(Transistor *transdefs, BOOL *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
+SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
 {
 	/* allocate state */
 	state_t *state = malloc(sizeof(state_t));
@@ -292,7 +310,7 @@ SetupNodesAndTransistors(Transistor *transdefs, BOOL *node_is_pullup, nodenum_t 
 
 	state->listout_bitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap));
 
-	state->group = malloc(state->numNodes * sizeof(*state->group));
+	state->pGroupNodes = malloc(state->numNodes * sizeof(*state->pGroupNodes));
 
 	state->groupbitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->groupbitmap));
 
@@ -315,11 +333,12 @@ SetupNodesAndTransistors(Transistor *transdefs, BOOL *node_is_pullup, nodenum_t 
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
-		nodenum_t gate = transdefs[i].gate;
-		nodenum_t c1 = transdefs[i].c1;
-		nodenum_t c2 = transdefs[i].c2;
+		nodenum_t gate = pTransdefs[i].gate;
+		nodenum_t c1 = pTransdefs[i].c1;
+		nodenum_t c2 = pTransdefs[i].c2;
 		/* skip duplicate transistors */
 		BOOL found = NO;
+
 		for (count_t j2 = 0; j2 < j; j2++) 
 		{
 			if (state->transistors_gate[j2] == gate &&
@@ -446,7 +465,7 @@ DestroyNodesAndTransistors(state_t *state)
     free(state->pNodeList[0]);
     free(state->pNodeList[1]);
     free(state->listout_bitmap);
-    free(state->group);
+    free(state->pGroupNodes);
     free(state->groupbitmap);
     free(state);
 }
@@ -454,12 +473,15 @@ DestroyNodesAndTransistors(state_t *state)
 void
 StabilizeChip(state_t *state)
 {
+	TRACE_PUSH("StabilizeChip");
+	// Add every node to the out list... stabilize *everything*
 	for (count_t i = 0; i < state->numNodes; i++)
 	{
-		listout_add(state, i);
+		ListOutAdd(state, i);
 	}
 
 	RecalcNodeList(state);
+	TRACE_POP();
 }
 
 /************************************************************
@@ -474,7 +496,7 @@ SetNode(state_t *state, nodenum_t nodeNum, BOOL s)
 	set_nodes_pullup(state, nodeNum, s);
 	set_nodes_pulldown(state, nodeNum, !s);
 
-	listout_add(state, nodeNum);
+	ListOutAdd(state, nodeNum);
 
 	RecalcNodeList(state);
 }

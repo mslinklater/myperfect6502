@@ -17,11 +17,15 @@ unsigned short PC;
 int N, Z, C;
 
 void
-init_monitor()
+init_monitor(char* filename, int address)
 {
 	FILE *f;
-	f = fopen("cbmbasic/cbmbasic.bin", "r");
-	fread(memory + 0xA000, 1, 17591, f);
+	//f = fopen("cbmbasic/cbmbasic.bin", "r");
+	f = fopen(filename, "r");
+	fseek(f, 0L, SEEK_END);
+	int fileSize = ftell(f);
+	fseek(f, 0L, SEEK_SET);
+	fread(memory + address, 1, fileSize, f);
 	fclose(f);
 
 	/*
@@ -29,6 +33,7 @@ init_monitor()
 	 * we will put code there later that loads
 	 * the CPU state and returns
 	 */
+	#if 1
 	for (unsigned short addr = 0xFF90; addr < 0xFFF3; addr += 3) {
 		memory[addr+0] = 0x4C;
 		memory[addr+1] = 0x00;
@@ -47,6 +52,7 @@ init_monitor()
 	
 	memory[0xfffc] = 0x00;
 	memory[0xfffd] = 0xF0;
+	#endif
 }
 
 void

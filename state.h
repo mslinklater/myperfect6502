@@ -46,8 +46,8 @@ typedef struct {
 
 	bitmap_t *listout_bitmap;
 
-	nodenum_t *group;
-	count_t groupcount;
+	nodenum_t *pGroupNodes;
+	count_t groupCount;
 	bitmap_t *groupbitmap;
 
 	enum {

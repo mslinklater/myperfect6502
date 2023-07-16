@@ -11,7 +11,7 @@ listin_get(state_t *state, count_t i)
 }
 
 static inline count_t
-listin_count(state_t *state)
+ListInCount(state_t *state)
 {
 	return state->listIn.count;
 }
@@ -25,14 +25,15 @@ ListsSwitch(state_t *state)
 }
 
 static inline void
-listout_clear(state_t *state)
+ListOutClear(state_t *state)
 {
+
 	state->listOut.count = 0;
 	BitmapClear(state->listout_bitmap, state->numNodes);
 }
 
 static inline void
-listout_add(state_t *state, nodenum_t i)
+ListOutAdd(state_t *state, nodenum_t i)
 {
 	if (!BitmapGet(state->listout_bitmap, i)) 
 	{

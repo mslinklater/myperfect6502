@@ -12,24 +12,28 @@
  * iteration, and a redundant bitmap for O(1) lookup
  */
 
+#include "trace.h"
+
 static inline void
 GroupClear(state_t *pState)
 {
-	pState->groupcount = 0;
+	TRACE_PUSH("GroupClear");
+	pState->groupCount = 0;
 	BitmapClear(pState->groupbitmap, pState->numNodes);
+	TRACE_POP();
 }
 
 static inline void
 group_add(state_t *state, nodenum_t i)
 {
-	state->group[state->groupcount++] = i;
+	state->pGroupNodes[state->groupCount++] = i;
 	BitmapSet(state->groupbitmap, i, 1);
 }
 
 static inline nodenum_t
 group_get(state_t *state, count_t n)
 {
-	return state->group[n];
+	return state->pGroupNodes[n];
 }
 
 static inline BOOL
@@ -38,9 +42,9 @@ group_contains(state_t *state, nodenum_t el)
 	return BitmapGet(state->groupbitmap, el);
 }
 
-static inline count_t
-group_count(state_t *state)
-{
-	return state->groupcount;
-}
+//static inline count_t
+//group_count(state_t *state)
+//{
+//	return state->groupCount;
+//}
 

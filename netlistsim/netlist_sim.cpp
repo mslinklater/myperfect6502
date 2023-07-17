@@ -164,16 +164,17 @@ RecalcNode(state_t *state, nodenum_t node)
 
 			if (newv) 
 			{
-				for (count_t g = 0; g < state->nodes_left_dependants[nn]; g++) 
+				for (count_t g = 0; g < state->nodesLeftDeps[nn]; g++) 
 				{
-					ListOutAdd(state, state->nodes_left_dependant[nn][g]);
+					ListOutAdd(state, state->nodesLeftDependant[nn][g]);
 				}
 			} 
 			else 
 			{
-				for (count_t g = 0; g < state->nodes_dependants[nn]; g++) 
+//				for (count_t g = 0; g < state->nodes_dependants[nn]; g++) 
+				for (count_t g = 0; g < state->nodesDeps[nn]; g++) 
 				{
-					ListOutAdd(state, state->nodes_dependant[nn][g]);
+					ListOutAdd(state, state->nodesDependant[nn][g]);
 				}
 			}
 		}
@@ -231,24 +232,26 @@ RecalcNodeList(state_t *state)
 static inline void
 add_nodes_dependant(state_t *state, nodenum_t a, nodenum_t b)
 {
-	for (count_t g = 0; g < state->nodes_dependants[a]; g++)
+//	for (count_t g = 0; g < state->nodes_dependants[a]; g++)
+	for (count_t g = 0; g < state->nodesDeps[a]; g++)
 
-	if (state->nodes_dependant[a][g] == b)
+	if (state->nodesDependant[a][g] == b)
 	{
 		return;
 	}
 
-	state->nodes_dependant[a][state->nodes_dependants[a]++] = b;
+//	state->nodes_dependant[a][state->nodes_dependants[a]++] = b;
+	state->nodesDependant[a][state->nodesDeps[a]++] = b;
 }
 
 static inline void
 add_nodes_left_dependant(state_t *state, nodenum_t a, nodenum_t b)
 {
-	for (count_t g = 0; g < state->nodes_left_dependants[a]; g++)
-	if (state->nodes_left_dependant[a][g] == b)
+	for (count_t g = 0; g < state->nodesLeftDeps[a]; g++)
+	if (state->nodesLeftDependant[a][g] == b)
 	return;
 
-	state->nodes_left_dependant[a][state->nodes_left_dependants[a]++] = b;
+	state->nodesLeftDependant[a][state->nodesLeftDeps[a]++] = b;
 }
 
 state_t *
@@ -278,31 +281,33 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->nodeC1C2Offset.resize(state->numNodes + 1);
 
-	state->nodes_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_dependants)));
-	state->nodes_left_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_left_dependants)));
-	state->nodes_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_dependant)));
+	state->nodesDeps.resize(state->numNodes);
+//	state->nodes_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_dependants)));
+	state->nodesLeftDeps.resize(state->numNodes);
+//	state->nodes_left_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_left_dependants)));
+	state->nodesDependant.resize(state->numNodes);
+//	state->nodes_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_dependant)));
 
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
-		state->nodes_dependant[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->nodes_dependant)));
+		state->nodesDependant[i].resize(state->numNodes);
 	}
 
-	state->nodes_left_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_left_dependant)));
+	state->nodesLeftDependant.resize(state->numNodes);
 
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
-		state->nodes_left_dependant[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->nodes_left_dependant)));
+		state->nodesLeftDependant[i].resize(state->numNodes);
 	}
 
-//	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
 	state->transistorsGate.resize(state->numTransistors);
 	state->transistorsC1.resize(state->numTransistors);
 	state->transistorsC2.resize(state->numTransistors);
 	state->onTransistors.resize(state->numTransistors);
 
 	// list buffers
-	state->pNodeList[0] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->pNodeList[0])));
-	state->pNodeList[1] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->pNodeList[1])));
+	state->nodeList[0].resize(state->numNodes);
+	state->nodeList[1].resize(state->numNodes);
 
 	state->listout_bitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap)));
 
@@ -312,10 +317,10 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	//state->groupBitmap.clear();
 	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
 
-	state->listIn.pNodes = state->pNodeList[0];
+	state->listIn.pNodes = state->nodeList[0].data();
     state->listIn.count = 0;
 
-	state->listOut.pNodes = state->pNodeList[1];
+	state->listOut.pNodes = state->nodeList[1].data();
     state->listOut.count = 0;
 
 	count_t i;
@@ -406,8 +411,9 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numNodes; i++) 
 	{
-		state->nodes_dependants[i] = 0;
-		state->nodes_left_dependants[i] = 0;
+//		state->nodes_dependants[i] = 0;
+		state->nodesDeps[i] = 0;
+		state->nodesLeftDeps[i] = 0;
 		for (count_t g = 0; g < state->nodeGateCount[i]; g++) 
 		{
 			transnum_t t = state->nodeGates[i][g];
@@ -438,21 +444,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    free(state->nodes_dependants);
-    free(state->nodes_left_dependants);
-
-    for (count_t i = 0; i < state->numNodes; i++) 
-	{
-        free(state->nodes_dependant[i]);
-    }
-    free(state->nodes_dependant);
-    for (count_t i = 0; i < state->numNodes; i++)
-	{
-        free(state->nodes_left_dependant[i]);
-    }
-    free(state->nodes_left_dependant);
-    free(state->pNodeList[0]);
-    free(state->pNodeList[1]);
     free(state->listout_bitmap);
     free(state->pBitmapGroup);
     free(state);

@@ -37,11 +37,11 @@ struct  state_t {
 	// Offsets in to the C1C2s array
 	std::vector<count_t> nodeC1C2Offset;
 
-	nodenum_t *nodes_dependants;
-	nodenum_t *nodes_left_dependants;
+	std::vector<nodenum_t> nodesDeps;
+	std::vector<nodenum_t> nodesLeftDeps;
 
-	nodenum_t **nodes_dependant;
-	nodenum_t **nodes_left_dependant;
+	std::vector<std::vector<nodenum_t>> nodesDependant;
+	std::vector<std::vector<nodenum_t>> nodesLeftDependant;
 
 	/* everything that describes a transistor */
 	std::vector<nodenum_t> transistorsGate;
@@ -50,23 +50,19 @@ struct  state_t {
 
 	std::vector<bool> onTransistors;
 
-	// QUESTION - Can we have more list to multi-thread ?
-
 	/* the nodes we are working with */
 	NodeList listIn;
 	NodeList listOut;
 
 	/* the indirect nodes we are collecting for the next run */
-	nodenum_t* pNodeList[2];
-
-	bitmap_t *listout_bitmap;
+	std::vector<nodenum_t> nodeList[2];
 
 	std::vector<nodenum_t> groupNodes;
-//	nodenum_t *pGroupNodes;
 	count_t groupCount;
 
+	bitmap_t *listout_bitmap;
 	bitmap_t *pBitmapGroup;
-//	std::vector<bool> groupBitmap;	// why does this cause it to fail ?
+//	std::vector<bool>groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;
 };

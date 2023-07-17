@@ -1,3 +1,4 @@
 *.o
 netlistsim/*.o
 cbmbasic/cbmbasic
+build

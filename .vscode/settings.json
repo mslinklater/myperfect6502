@@ -1,5 +1,6 @@
 {
 	"files.exclude": {
 		"**/*.o": true
-	}
+	},
+	"C_Cpp.default.configurationProvider": "ms-vscode.makefile-tools"
 }

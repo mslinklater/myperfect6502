@@ -181,10 +181,10 @@ unsigned short orig_error, orig_main, orig_crnch, orig_qplop, orig_gone, orig_ev
 int plugin = 0;
 
 void
-replace_vector(unsigned short address, unsigned short new, unsigned short *old) {
+replace_vector(unsigned short address, unsigned short _new, unsigned short *old) {
 	*old = RAM[address] | (RAM[address+1]<<8);
-	RAM[address] = (new)&0xFF;
-	RAM[address+1] = (new)>>8;
+	RAM[address] = (_new)&0xFF;
+	RAM[address+1] = (_new)>>8;
 }
 
 void

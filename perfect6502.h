@@ -1,6 +1,4 @@
-#ifndef INCLUDED_FROM_NETLIST_SIM_C
-#define state_t void
-#endif
+struct state_t;
 
 extern state_t *InitAndResetChip();
 extern void destroyChip(state_t *state);

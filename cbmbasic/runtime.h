@@ -1,1 +1,1 @@
-void handle_monitor();
+void handle_monitor(state_t*);

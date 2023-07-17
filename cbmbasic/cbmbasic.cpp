@@ -12,7 +12,7 @@ main( int argv, char** argc)
 	int numClocksToRun = atoi(argc[3]);
 	int isBasic = atoi(argc[4]);
 
-	void* pState = InitAndResetChip();
+	state_t* pState = InitAndResetChip();
 
 	/* set up memory for user program */
 	init_monitor(argc[1], address, isBasic);

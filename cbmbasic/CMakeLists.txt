@@ -1,9 +1,9 @@
 set(SOURCE_FILES ${SOURCE_FILES}
-	${CMAKE_CURRENT_LIST_DIR}/cbmbasic.c
-	${CMAKE_CURRENT_LIST_DIR}/console.c
-	${CMAKE_CURRENT_LIST_DIR}/emu.c
-	${CMAKE_CURRENT_LIST_DIR}/plugin.c
-	${CMAKE_CURRENT_LIST_DIR}/runtime_init.c
-	${CMAKE_CURRENT_LIST_DIR}/runtime.c
+	${CMAKE_CURRENT_LIST_DIR}/cbmbasic.cpp
+	${CMAKE_CURRENT_LIST_DIR}/console.cpp
+	${CMAKE_CURRENT_LIST_DIR}/emu.cpp
+	${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
+	${CMAKE_CURRENT_LIST_DIR}/runtime_init.cpp
+	${CMAKE_CURRENT_LIST_DIR}/runtime.cpp
 	PARENT_SCOPE
 )

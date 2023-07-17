@@ -57,7 +57,7 @@ init_monitor(char* filename, int address, int isBasic)
 }
 
 void
-handle_monitor(void *state)
+handle_monitor(state_t *state)
 {
 	PC = readPC(state);
 

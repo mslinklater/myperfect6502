@@ -25,6 +25,7 @@
 #include "netlistsim/netlist_sim.h"
 /* nodes & transistors */
 #include "netlist_6502.h"
+#include "state.h"
 
 /************************************************************
  *
@@ -33,79 +34,90 @@
  ************************************************************/
 
 uint16_t
-readAddressBus(void *state)
+readAddressBus(state_t *state)
 {
-	return ReadNodes(state, 16, (nodenum_t[]){ ab0, ab1, ab2, ab3, ab4, ab5, ab6, ab7, ab8, ab9, ab10, ab11, ab12, ab13, ab14, ab15 });
+	nodenum_t nodes[] = { ab0, ab1, ab2, ab3, ab4, ab5, ab6, ab7, ab8, ab9, ab10, ab11, ab12, ab13, ab14, ab15 };
+	return ReadNodes(state, 16, &nodes[0]);
 }
 
 uint8_t
-readDataBus(void *state)
+readDataBus(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ db0, db1, db2, db3, db4, db5, db6, db7 });
+	nodenum_t nodes[] = { db0, db1, db2, db3, db4, db5, db6, db7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 void
-writeDataBus(void *state, uint8_t d)
+writeDataBus(state_t *state, uint8_t d)
 {
-	WriteNodes(state, 8, (nodenum_t[]){ db0, db1, db2, db3, db4, db5, db6, db7 }, d);
+	nodenum_t nodes[] = { db0, db1, db2, db3, db4, db5, db6, db7 };
+	WriteNodes(state, 8, &nodes[0], d);
 }
 
 BOOL
-readRW(void *state)
+readRW(state_t *state)
 {
 	return IsNodeHigh(state, rw);
 }
 
 uint8_t
-readA(void *state)
+readA(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ a0,a1,a2,a3,a4,a5,a6,a7 });
+	nodenum_t nodes[] = { a0,a1,a2,a3,a4,a5,a6,a7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readX(void *state)
+readX(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ x0,x1,x2,x3,x4,x5,x6,x7 });
+	nodenum_t nodes[] = { x0,x1,x2,x3,x4,x5,x6,x7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readY(void *state)
+readY(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ y0,y1,y2,y3,y4,y5,y6,y7 });
+	nodenum_t nodes[] = { y0,y1,y2,y3,y4,y5,y6,y7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readP(void *state)
+readP(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ p0,p1,p2,p3,p4,p5,p6,p7 });
+	nodenum_t nodes[] = { p0,p1,p2,p3,p4,p5,p6,p7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readIR(void *state)
+readIR(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ notir0,notir1,notir2,notir3,notir4,notir5,notir6,notir7 }) ^ 0xFF;
+	nodenum_t nodes[] = { notir0,notir1,notir2,notir3,notir4,notir5,notir6,notir7 };
+	return ReadNodes(state, 8, &nodes[0]) ^ 0xFF;
 }
 
 uint8_t
-readSP(void *state)
+readSP(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ s0,s1,s2,s3,s4,s5,s6,s7 });
+	nodenum_t nodes[] = { s0,s1,s2,s3,s4,s5,s6,s7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readPCL(void *state)
+readPCL(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ pcl0,pcl1,pcl2,pcl3,pcl4,pcl5,pcl6,pcl7 });
+	nodenum_t nodes[] = { pcl0,pcl1,pcl2,pcl3,pcl4,pcl5,pcl6,pcl7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint8_t
-readPCH(void *state)
+readPCH(state_t *state)
 {
-	return ReadNodes(state, 8, (nodenum_t[]){ pch0,pch1,pch2,pch3,pch4,pch5,pch6,pch7 });
+	nodenum_t nodes[] = { pch0,pch1,pch2,pch3,pch4,pch5,pch6,pch7 };
+	return ReadNodes(state, 8, &nodes[0]);
 }
 
 uint16_t
-readPC(void *state)
+readPC(state_t *state)
 {
 	return (readPCH(state) << 8) | readPCL(state);
 }
@@ -131,7 +143,7 @@ mWrite(uint16_t a, uint8_t d)
 }
 
 static inline void
-handleMemory(void *state)
+handleMemory(state_t *state)
 {
 	if (IsNodeHigh(state, rw))
 		writeDataBus(state, mRead(readAddressBus(state)));
@@ -148,7 +160,7 @@ handleMemory(void *state)
 unsigned int cycle;
 
 void
-step(void *state)
+step(state_t *state)
 {
 	BOOL clk = IsNodeHigh(state, clk0);
 
@@ -163,7 +175,7 @@ step(void *state)
 	cycle++;
 }
 
-void *
+state_t *
 InitAndResetChip()
 {
 	/* set up data structures for efficient emulation */
@@ -171,7 +183,7 @@ InitAndResetChip()
 
 	nodenum_t transistors = sizeof(netlist_6502_transdefs)/sizeof(*netlist_6502_transdefs);
 	
-	void *state = SetupNodesAndTransistors(netlist_6502_transdefs,
+	state_t *state = SetupNodesAndTransistors(netlist_6502_transdefs,
 										   netlist_6502_node_is_pullup,
 										   nodes,
 										   transistors,
@@ -201,7 +213,7 @@ InitAndResetChip()
 }
 
 void
-destroyChip(void *state)
+destroyChip(state_t *state)
 {
     DestroyNodesAndTransistors(state);
 }
@@ -213,7 +225,7 @@ destroyChip(void *state)
  ************************************************************/
 
 void
-chipStatus(void *state)
+chipStatus(state_t *state)
 {
 	BOOL clk = IsNodeHigh(state, clk0);
 	uint16_t a = readAddressBus(state);

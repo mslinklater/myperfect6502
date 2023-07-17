@@ -6,7 +6,16 @@
  *
  ************************************************************/
 
-typedef struct {
+enum EGroupContainsValue {
+	kNothing,
+	kHigh,
+	kPullup,
+	kPulldown,
+	kVcc,
+	kVss
+};
+
+struct  state_t {
 	nodenum_t numNodes;
 	nodenum_t numTransistors;
 	nodenum_t vss;
@@ -52,13 +61,6 @@ typedef struct {
 	nodenum_t *pGroupNodes;
 	count_t groupCount;
 	bitmap_t *pBitmapGroup;
-
-	enum {
-		kNothing,
-		kHigh,
-		kPullup,
-		kPulldown,
-		kVcc,
-		kVss
-	} EGroupContainsValue;
-} state_t;
+	
+	EGroupContainsValue groupContainsValue;
+};

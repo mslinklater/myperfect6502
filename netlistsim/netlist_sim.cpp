@@ -51,16 +51,17 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	 */
 	if (n == state->vss) 
 	{
-		state->EGroupContainsValue = kVss;
+		state->groupContainsValue = EGroupContainsValue::kVss;
+//		state->EGroupContainsValue = kVss;
 		TRACE_POP();
 		return;
 	}
 	
 	if (n == state->vcc) 
 	{
-		if (state->EGroupContainsValue != kVss)
+		if (state->groupContainsValue != EGroupContainsValue::kVss)
 		{
-			state->EGroupContainsValue = kVcc;
+			state->groupContainsValue = EGroupContainsValue::kVcc;
 		}
 		TRACE_POP();
 		return;
@@ -75,17 +76,17 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 
 	GroupAdd(state, n);
 
-	if (state->EGroupContainsValue < kPulldown && GetNodePulldown(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kPulldown && GetNodePulldown(state, n)) 
 	{
-		state->EGroupContainsValue = kPulldown;
+		state->groupContainsValue = EGroupContainsValue::kPulldown;
 	}
-	if (state->EGroupContainsValue < kPullup && GetNodePullup(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kPullup && GetNodePullup(state, n)) 
 	{
-		state->EGroupContainsValue = kPullup;
+		state->groupContainsValue = EGroupContainsValue::kPullup;
 	}
-	if (state->EGroupContainsValue < kHigh && GetNodeState(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kHigh && GetNodeState(state, n)) 
 	{
-		state->EGroupContainsValue = kHigh;
+		state->groupContainsValue = EGroupContainsValue::kHigh;
 	}
 
 	/* revisit all transistors that control this node */
@@ -110,7 +111,7 @@ AddAllNodesToGroup(state_t *state, nodenum_t node)
 	TRACE_PUSH("AddAllNodesToGroup");
 	GroupClear(state);
 
-	state->EGroupContainsValue = kNothing;
+	state->groupContainsValue = EGroupContainsValue::kNothing;
 
 	AddNodeToGroup(state, node);
 	TRACE_POP();
@@ -119,15 +120,15 @@ AddAllNodesToGroup(state_t *state, nodenum_t node)
 static inline BOOL
 GetGroupValue(state_t *state)
 {
-	switch (state->EGroupContainsValue) 
+	switch (state->groupContainsValue) 
 	{
-		case kVcc:
-		case kPullup:
-		case kHigh:
+		case EGroupContainsValue::kVcc:
+		case EGroupContainsValue::kPullup:
+		case EGroupContainsValue::kHigh:
 			return YES;
-		case kVss:
-		case kPulldown:
-		case kNothing:
+		case EGroupContainsValue::kVss:
+		case EGroupContainsValue::kPulldown:
+		case EGroupContainsValue::kNothing:
 			return NO;
 	}
 	return NO;
@@ -259,7 +260,7 @@ state_t *
 SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
 {
 	/* allocate state */
-	state_t *state = malloc(sizeof(state_t));
+	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
 
 	state->numNodes = numNodes;
 	state->numTransistors = numTransistors;
@@ -267,51 +268,51 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 	state->vcc = vcc;
 
 	// Bitmaps - large bit arrays
-	state->pPullupNodesBitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap));
-	state->pPulldownNodesBitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPulldownNodesBitmap));
-	state->pNodesStateBitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap));
+	state->pPullupNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap)));
+	state->pPulldownNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPulldownNodesBitmap)));
+	state->pNodesStateBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap)));
 
 	// array of arrays - not sure what these do yet...
-	state->ppNodeGates = malloc(state->numNodes * sizeof(*state->ppNodeGates));
+	state->ppNodeGates = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->ppNodeGates)));
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
-		state->ppNodeGates[i] = calloc(state->numNodes, sizeof(**state->ppNodeGates));
+		state->ppNodeGates[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->ppNodeGates)));
 	}
 
-	state->pNodeGateCount = calloc(state->numNodes, sizeof(*state->pNodeGateCount));
+	state->pNodeGateCount = reinterpret_cast<count_t*>(calloc(state->numNodes, sizeof(*state->pNodeGateCount)));
 
-	state->pNodeC1C2Offset = calloc(state->numNodes + 1, sizeof(*state->pNodeC1C2Offset));
+	state->pNodeC1C2Offset = reinterpret_cast<count_t*>(calloc(state->numNodes + 1, sizeof(*state->pNodeC1C2Offset)));
 
-	state->nodes_dependants = calloc(state->numNodes, sizeof(*state->nodes_dependants));
-	state->nodes_left_dependants = calloc(state->numNodes, sizeof(*state->nodes_left_dependants));
-	state->nodes_dependant = malloc(state->numNodes * sizeof(*state->nodes_dependant));
-
-	for (count_t i = 0; i < state->numNodes; i++) 
-	{
-		state->nodes_dependant[i] = calloc(state->numNodes, sizeof(**state->nodes_dependant));
-	}
-
-	state->nodes_left_dependant = malloc(state->numNodes * sizeof(*state->nodes_left_dependant));
+	state->nodes_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_dependants)));
+	state->nodes_left_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_left_dependants)));
+	state->nodes_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_dependant)));
 
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
-		state->nodes_left_dependant[i] = calloc(state->numNodes, sizeof(**state->nodes_left_dependant));
+		state->nodes_dependant[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->nodes_dependant)));
 	}
 
-	state->pTransistorsGate = calloc(state->numTransistors, sizeof(*state->pTransistorsGate));
-	state->pTransistorsC1 = calloc(state->numTransistors, sizeof(*state->pTransistorsC1));
-	state->pTransistorsC2 = calloc(state->numTransistors, sizeof(*state->pTransistorsC2));
-	state->pBitmapOnTransistors = calloc(BitmapGetRequiredSize(state->numTransistors), sizeof(*state->pBitmapOnTransistors));
+	state->nodes_left_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_left_dependant)));
+
+	for (count_t i = 0; i < state->numNodes; i++) 
+	{
+		state->nodes_left_dependant[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->nodes_left_dependant)));
+	}
+
+	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
+	state->pTransistorsC1 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC1)));
+	state->pTransistorsC2 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC2)));
+	state->pBitmapOnTransistors = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numTransistors), sizeof(*state->pBitmapOnTransistors)));
 
 	// list buffers
-	state->pNodeList[0] = calloc(state->numNodes, sizeof(*state->pNodeList[0]));
-	state->pNodeList[1] = calloc(state->numNodes, sizeof(*state->pNodeList[1]));
+	state->pNodeList[0] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->pNodeList[0])));
+	state->pNodeList[1] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->pNodeList[1])));
 
-	state->listout_bitmap = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap));
+	state->listout_bitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap)));
 
-	state->pGroupNodes = malloc(state->numNodes * sizeof(*state->pGroupNodes));
+	state->pGroupNodes = reinterpret_cast<nodenum_t*>(malloc(state->numNodes * sizeof(*state->pGroupNodes)));
 
-	state->pBitmapGroup = calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup));
+	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
 
 	state->listIn.list = state->pNodeList[0];
     state->listIn.count = 0;
@@ -361,7 +362,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 
 	/* cross reference transistors in nodes data structures */
 	/* start by computing how many c1c2 entries should be created for each node */
-	count_t *c1c2count = calloc(state->numNodes, sizeof(*c1c2count));
+	count_t *c1c2count = reinterpret_cast<count_t*>(calloc(state->numNodes, sizeof(*c1c2count)));
 	count_t c1c2total = 0;
 
 	for (i = 0; i < state->numTransistors; i++) 
@@ -390,7 +391,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 
 	state->pNodeC1C2Offset[i] = c1c2offset;
 	/* create and fill the nodes_c1c2s array according to these offsets */
-	state->pNodeC1C2s = calloc(c1c2total, sizeof(*state->pNodeC1C2s));
+	state->pNodeC1C2s = reinterpret_cast<c1c2_t*>(calloc(c1c2total, sizeof(*state->pNodeC1C2s)));
 	memset(c1c2count, 0, state->numNodes * sizeof(*c1c2count));
 
 

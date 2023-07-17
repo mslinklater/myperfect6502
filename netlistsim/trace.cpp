@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "trace.h"
+#include <string>
 
 #define TRACE_ENABLED 0
 
@@ -7,7 +8,7 @@
 static int stackDepth = 0;
 #endif
 
-void TRACE_PUSH(char* label)
+void TRACE_PUSH(std::string label)
 {
 #if TRACE_ENABLED
 	int i;
@@ -15,7 +16,7 @@ void TRACE_PUSH(char* label)
 	{
 		printf(":   ");
 	}
-	printf("%s", label);
+	printf("%s", label.c_str());
 	printf("\n");
 	stackDepth += 1;
 #endif // TRACE_ENABLED

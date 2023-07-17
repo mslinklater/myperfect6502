@@ -158,7 +158,7 @@ RecalcNode(state_t *state, nodenum_t node)
 
 			for (count_t t = 0; t < state->nodeGateCount[nn]; t++) 
 			{
-				transnum_t tn = state->ppNodeGates[nn][t];
+				transnum_t tn = state->nodeGates[nn][t];
 				state->onTransistors[tn] = newv;
 			}
 
@@ -268,10 +268,10 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->nodeState.resize(state->numNodes);
 
 	// array of arrays - not sure what these do yet...
-	state->ppNodeGates = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->ppNodeGates)));
+	state->nodeGates.resize(state->numNodes);
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
-		state->ppNodeGates[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->ppNodeGates)));
+		state->nodeGates[i].resize(state->numNodes);
 	}
 
 	state->nodeGateCount.resize(state->numNodes);
@@ -367,13 +367,12 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
-//		nodenum_t gate = state->pTransistorsGate[i];
 		nodenum_t gate = state->transistorsGate[i];
 		nodenum_t c1 = state->transistorsC1[i];
 		nodenum_t c2 = state->transistorsC2[i];
 
 		nodenum_t gateCount = state->nodeGateCount[gate];
-		state->ppNodeGates[gate][gateCount] = i;
+		state->nodeGates[gate][gateCount] = i;
 		state->nodeGateCount[gate]++;
 
 		c1c2count[c1]++;
@@ -411,7 +410,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		state->nodes_left_dependants[i] = 0;
 		for (count_t g = 0; g < state->nodeGateCount[i]; g++) 
 		{
-			transnum_t t = state->ppNodeGates[i][g];
+			transnum_t t = state->nodeGates[i][g];
 			nodenum_t c1 = state->transistorsC1[t];
 			if (c1 != vss && c1 != vcc) 
 			{
@@ -439,12 +438,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    for (count_t i = 0; i < state->numNodes; i++) 
-	{
-        free(state->ppNodeGates[i]);
-    }
-
-    free(state->ppNodeGates);
     free(state->nodes_dependants);
     free(state->nodes_left_dependants);
 

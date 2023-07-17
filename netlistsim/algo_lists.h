@@ -27,7 +27,6 @@ ListsSwitch(state_t *state)
 static inline void
 ListOutClear(state_t *state)
 {
-
 	state->listOut.count = 0;
 	BitmapClear(state->listout_bitmap, state->numNodes);
 }

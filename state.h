@@ -28,7 +28,7 @@ struct  state_t {
 	std::vector<bool> pulldownNodes;
 	std::vector<bool> nodeState;
 
-	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
+	std::vector<std::vector<nodenum_t>> nodeGates;
 
 	std::vector<c1c2_t> nodeC1C2s;
 

@@ -5,12 +5,12 @@
  ************************************************************/
 
 static inline void
-SetTransistorOn(state_t *state, transnum_t t, BOOL s)
+SetTransistorOn(state_t *state, transnum_t t, bool s)
 {
 	BitmapSet(state->pBitmapOnTransistors, t, s);
 }
 
-static inline BOOL
+static inline bool
 GetTransistorOn(state_t *state, transnum_t t)
 {
 	return BitmapGet(state->pBitmapOnTransistors, t);

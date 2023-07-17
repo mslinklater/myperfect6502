@@ -5,7 +5,7 @@
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
-typedef unsigned int BOOL;
+typedef unsigned int bool;
 
 extern uint8_t memory[65536];
 
@@ -31,30 +31,30 @@ extern uint8_t memory[65536];
 #define IS_READING(a) (IS_READ_CYCLE && readAddressBus(state) == (a))
 
 struct {
-	BOOL crash;
+	bool crash;
 	int length;
 	int cycles;
 	int addmode;
-	BOOL zp;
-	BOOL abs;
-	BOOL zpx;
-	BOOL absx;
-	BOOL zpy;
-	BOOL absy;
-	BOOL izx;
-	BOOL izy;
-	BOOL reads;
-	BOOL writes;
-	BOOL inputa;
-	BOOL inputx;
-	BOOL inputy;
-	BOOL inputs;
-	BOOL inputp;
-	BOOL outputa;
-	BOOL outputx;
-	BOOL outputy;
-	BOOL outputs;
-	BOOL outputp;
+	bool zp;
+	bool abs;
+	bool zpx;
+	bool absx;
+	bool zpy;
+	bool absy;
+	bool izx;
+	bool izy;
+	bool reads;
+	bool writes;
+	bool inputa;
+	bool inputx;
+	bool inputy;
+	bool inputs;
+	bool inputp;
+	bool outputa;
+	bool outputx;
+	bool outputy;
+	bool outputs;
+	bool outputp;
 } data[256];
 
 enum {
@@ -203,7 +203,7 @@ main()
 				step(state);
 				if (IS_READ_CYCLE || IS_WRITE_CYCLE) {
 //printf("RW@ %X\n", readAddressBus(state));
-					BOOL is_data_access = YES;
+					bool is_data_access = YES;
 					if (readAddressBus(state) == MAGIC_8)
 						data[opcode].zp = YES;
 					else if (readAddressBus(state) == MAGIC_16)
@@ -267,7 +267,7 @@ main()
 			 **************************************************/
 //printf("AAA\n");
 			for (int k = 0; k < 5; k++) {
-				BOOL different = NO;
+				bool different = NO;
 				int reads, writes;
 				uint16_t read[100], write[100], write_data[100];
 				uint8_t end_a, end_x, end_y, end_s, end_p;

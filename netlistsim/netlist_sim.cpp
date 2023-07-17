@@ -145,7 +145,7 @@ RecalcNode(state_t *state, nodenum_t node)
 	AddAllNodesToGroup(state, node);
 
 	/* get the state of the group */
-	BOOL newv = GetGroupValue(state);
+	bool newv = GetGroupValue(state);
 
 	/*
 	 * - set all nodes to the group state
@@ -257,7 +257,7 @@ add_nodes_left_dependant(state_t *state, nodenum_t a, nodenum_t b)
 }
 
 state_t *
-SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
+SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
 {
 	/* allocate state */
 	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
@@ -498,7 +498,7 @@ StabilizeChip(state_t *state)
  ************************************************************/
 
 void
-SetNode(state_t *state, nodenum_t nodeNum, BOOL s)
+SetNode(state_t *state, nodenum_t nodeNum, bool s)
 {
 	TRACE_PUSH("SetNode");
 	SetNodePullup(state, nodeNum, s);
@@ -510,7 +510,7 @@ SetNode(state_t *state, nodenum_t nodeNum, BOOL s)
 	TRACE_POP();
 }
 
-BOOL
+bool
 IsNodeHigh(state_t *state, nodenum_t nn)
 {
 	return GetNodeState(state, nn);

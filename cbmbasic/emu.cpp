@@ -20,7 +20,7 @@ static uint8_t temp_lo, temp_hi;
 
 static uint16_t AB;
 static uint8_t DB;
-static BOOL RW;
+static bool RW;
 extern uint8_t memory[65536];
 
 #define RW_WRITE 0

@@ -18,7 +18,7 @@ BitmapClear(bitmap_t *bitmap, count_t count)
 }
 
 static inline void
-BitmapSet(bitmap_t *bitmap, int index, BOOL state)
+BitmapSet(bitmap_t *bitmap, int index, bool state)
 {
 	if (state)
 		bitmap[index>>BITMAP_SHIFT] |= ONE << (index & BITMAP_MASK);
@@ -26,7 +26,7 @@ BitmapSet(bitmap_t *bitmap, int index, BOOL state)
 		bitmap[index>>BITMAP_SHIFT] &= ~(ONE << (index & BITMAP_MASK));
 }
 
-static inline BOOL
+static inline bool
 BitmapGet(bitmap_t *bitmap, int index)
 {
 	return (bitmap[index>>BITMAP_SHIFT] >> (index & BITMAP_MASK)) & 1;

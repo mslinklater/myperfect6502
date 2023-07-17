@@ -54,7 +54,7 @@ writeDataBus(state_t *state, uint8_t d)
 	WriteNodes(state, 8, &nodes[0], d);
 }
 
-BOOL
+bool
 readRW(state_t *state)
 {
 	return IsNodeHigh(state, rw);
@@ -162,7 +162,7 @@ unsigned int cycle;
 void
 step(state_t *state)
 {
-	BOOL clk = IsNodeHigh(state, clk0);
+	bool clk = IsNodeHigh(state, clk0);
 
 	/* invert clock */
 	SetNode(state, clk0, !clk);
@@ -227,10 +227,10 @@ destroyChip(state_t *state)
 void
 chipStatus(state_t *state)
 {
-	BOOL clk = IsNodeHigh(state, clk0);
+	bool clk = IsNodeHigh(state, clk0);
 	uint16_t a = readAddressBus(state);
 	uint8_t d = readDataBus(state);
-	BOOL r_w = IsNodeHigh(state, rw);
+	bool r_w = IsNodeHigh(state, rw);
 
 	if (clk) {
 		printf("%d AB:%04X D:%02X RnW:%d PC:%04X A:%02X X:%02X Y:%02X SP:%02X P:%02X IR:%02X",

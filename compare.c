@@ -1,6 +1,6 @@
 
 void
-full_step(uint16_t *a, uint8_t *d, BOOL *r_w)
+full_step(uint16_t *a, uint8_t *d, bool *r_w)
 {
 	step();
 	step();
@@ -99,7 +99,7 @@ setup_perfect()
 
 uint16_t instr_ab[10];
 uint8_t instr_db[10];
-BOOL instr_rw[10];
+bool instr_rw[10];
 
 int
 perfect_measure_instruction()
@@ -109,7 +109,7 @@ perfect_measure_instruction()
 	for (int i = 0; i < MAX_CYCLES; i++) {
 		uint16_t ab;
 		uint8_t db;
-		BOOL r_w;
+		bool r_w;
 		full_step(&ab, &db, &r_w);
 
 		if (state == STATE_DURING_INSTRUCTION && ab > trigger2) {

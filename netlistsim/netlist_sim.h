@@ -2,13 +2,13 @@ struct state_t;
 
 // The public API to the netlist simulation
 
-state_t* SetupNodesAndTransistors(Transistor *transdefs, BOOL *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
+state_t* SetupNodesAndTransistors(Transistor *transdefs, bool *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
 
 void DestroyNodesAndTransistors(state_t *state);
 
-void SetNode(state_t *state, nodenum_t nn, BOOL s);
+void SetNode(state_t *state, nodenum_t nn, bool s);
 
-BOOL IsNodeHigh(state_t *state, nodenum_t nn);
+bool IsNodeHigh(state_t *state, nodenum_t nn);
 
 unsigned int ReadNodes(state_t *state, int count, nodenum_t *nodelist);
 

@@ -85,9 +85,9 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	}
 
 	/* revisit all transistors that control this node */
-	count_t end = state->pNodeC1C2Offset[n+1];
+	count_t end = state->nodeC1C2Offset[n+1];
 
-	for (count_t t = state->pNodeC1C2Offset[n]; t < end; t++) 
+	for (count_t t = state->nodeC1C2Offset[n]; t < end; t++) 
 	{
 		c1c2_t c = state->nodeC1C2s[t];
 
@@ -276,7 +276,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->nodeGateCount.resize(state->numNodes);
 
-	state->pNodeC1C2Offset = reinterpret_cast<count_t*>(calloc(state->numNodes + 1, sizeof(*state->pNodeC1C2Offset)));
+	state->nodeC1C2Offset.resize(state->numNodes + 1);
 
 	state->nodes_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_dependants)));
 	state->nodes_left_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_left_dependants)));
@@ -294,9 +294,10 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		state->nodes_left_dependant[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->nodes_left_dependant)));
 	}
 
-	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
-	state->pTransistorsC1 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC1)));
-	state->pTransistorsC2 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC2)));
+//	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
+	state->transistorsGate.resize(state->numTransistors);
+	state->transistorsC1.resize(state->numTransistors);
+	state->transistorsC2.resize(state->numTransistors);
 	state->onTransistors.resize(state->numTransistors);
 
 	// list buffers
@@ -305,7 +306,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->listout_bitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap)));
 
-	state->pGroupNodes = reinterpret_cast<nodenum_t*>(malloc(state->numNodes * sizeof(*state->pGroupNodes)));
+	state->groupNodes.resize(state->numNodes);
 
 	//state->groupBitmap.resize(state->numNodes);
 	//state->groupBitmap.clear();
@@ -338,20 +339,22 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 		for (count_t j2 = 0; j2 < j; j2++) 
 		{
-			if (state->pTransistorsGate[j2] == gate &&
-				((state->pTransistorsC1[j2] == c1 &&
-				  state->pTransistorsC2[j2] == c2) ||
-				 (state->pTransistorsC1[j2] == c2 &&
-				  state->pTransistorsC2[j2] == c1))) 
+//			if (state->pTransistorsGate[j2] == gate &&
+			if (state->transistorsGate[j2] == gate &&
+				((state->transistorsC1[j2] == c1 &&
+				  state->transistorsC2[j2] == c2) ||
+				 (state->transistorsC1[j2] == c2 &&
+				  state->transistorsC2[j2] == c1))) 
 			{
 				found = true;
 			}
 		}
 		if (!found) 
 		{
-			state->pTransistorsGate[j] = gate;
-			state->pTransistorsC1[j] = c1;
-			state->pTransistorsC2[j] = c2;
+//			state->pTransistorsGate[j] = gate;
+			state->transistorsGate[j] = gate;
+			state->transistorsC1[j] = c1;
+			state->transistorsC2[j] = c2;
 			j++;
 		}
 	}
@@ -364,9 +367,10 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
-		nodenum_t gate = state->pTransistorsGate[i];
-		nodenum_t c1 = state->pTransistorsC1[i];
-		nodenum_t c2 = state->pTransistorsC2[i];
+//		nodenum_t gate = state->pTransistorsGate[i];
+		nodenum_t gate = state->transistorsGate[i];
+		nodenum_t c1 = state->transistorsC1[i];
+		nodenum_t c2 = state->transistorsC2[i];
 
 		nodenum_t gateCount = state->nodeGateCount[gate];
 		state->ppNodeGates[gate][gateCount] = i;
@@ -382,21 +386,21 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numNodes; i++) 
 	{
-		state->pNodeC1C2Offset[i] = c1c2offset;
+		state->nodeC1C2Offset[i] = c1c2offset;
 		c1c2offset += c1c2count[i];
 	}
 
-	state->pNodeC1C2Offset[i] = c1c2offset;
+	state->nodeC1C2Offset[i] = c1c2offset;
 	/* create and fill the nodes_c1c2s array according to these offsets */
 	state->nodeC1C2s.resize(c1c2total);
 	memset(c1c2count, 0, state->numNodes * sizeof(*c1c2count));
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
-		nodenum_t c1 = state->pTransistorsC1[i];
-		nodenum_t c2 = state->pTransistorsC2[i];
-		state->nodeC1C2s[state->pNodeC1C2Offset[c1] + c1c2count[c1]++] = c1c2(i, c2);
-		state->nodeC1C2s[state->pNodeC1C2Offset[c2] + c1c2count[c2]++] = c1c2(i, c1);
+		nodenum_t c1 = state->transistorsC1[i];
+		nodenum_t c2 = state->transistorsC2[i];
+		state->nodeC1C2s[state->nodeC1C2Offset[c1] + c1c2count[c1]++] = c1c2(i, c2);
+		state->nodeC1C2s[state->nodeC1C2Offset[c2] + c1c2count[c2]++] = c1c2(i, c1);
 	}
 
 	free(c1c2count);
@@ -408,12 +412,12 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		for (count_t g = 0; g < state->nodeGateCount[i]; g++) 
 		{
 			transnum_t t = state->ppNodeGates[i][g];
-			nodenum_t c1 = state->pTransistorsC1[t];
+			nodenum_t c1 = state->transistorsC1[t];
 			if (c1 != vss && c1 != vcc) 
 			{
 				add_nodes_dependant(state, i, c1);
 			}
-			nodenum_t c2 = state->pTransistorsC2[t];
+			nodenum_t c2 = state->transistorsC2[t];
 			if (c2 != vss && c2 != vcc) 
 			{
 				add_nodes_dependant(state, i, c2);
@@ -441,7 +445,6 @@ DestroyNodesAndTransistors(state_t *state)
     }
 
     free(state->ppNodeGates);
-    free(state->pNodeC1C2Offset);
     free(state->nodes_dependants);
     free(state->nodes_left_dependants);
 
@@ -455,13 +458,9 @@ DestroyNodesAndTransistors(state_t *state)
         free(state->nodes_left_dependant[i]);
     }
     free(state->nodes_left_dependant);
-    free(state->pTransistorsGate);
-    free(state->pTransistorsC1);
-    free(state->pTransistorsC2);
     free(state->pNodeList[0]);
     free(state->pNodeList[1]);
     free(state->listout_bitmap);
-    free(state->pGroupNodes);
     free(state->pBitmapGroup);
     free(state);
 }

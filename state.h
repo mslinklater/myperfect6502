@@ -35,7 +35,7 @@ struct  state_t {
 	std::vector<count_t> nodeGateCount;
 
 	// Offsets in to the C1C2s array
-	count_t *pNodeC1C2Offset;
+	std::vector<count_t> nodeC1C2Offset;
 
 	nodenum_t *nodes_dependants;
 	nodenum_t *nodes_left_dependants;
@@ -44,9 +44,9 @@ struct  state_t {
 	nodenum_t **nodes_left_dependant;
 
 	/* everything that describes a transistor */
-	nodenum_t *pTransistorsGate;
-	nodenum_t *pTransistorsC1;
-	nodenum_t *pTransistorsC2;
+	std::vector<nodenum_t> transistorsGate;
+	std::vector<nodenum_t> transistorsC1;
+	std::vector<nodenum_t> transistorsC2;
 
 	std::vector<bool> onTransistors;
 
@@ -54,18 +54,19 @@ struct  state_t {
 
 	/* the nodes we are working with */
 	NodeList listIn;
-
-	bitmap_t *pBitmapGroup;
+	NodeList listOut;
 
 	/* the indirect nodes we are collecting for the next run */
-	NodeList listOut;
 	nodenum_t* pNodeList[2];
 
 	bitmap_t *listout_bitmap;
 
-	nodenum_t *pGroupNodes;
+	std::vector<nodenum_t> groupNodes;
+//	nodenum_t *pGroupNodes;
 	count_t groupCount;
-//	std::vector<bool> groupBitmap;
+
+	bitmap_t *pBitmapGroup;
+//	std::vector<bool> groupBitmap;	// why does this cause it to fail ?
 	
 	EGroupContainsValue groupContainsValue;
 };

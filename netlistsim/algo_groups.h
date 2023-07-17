@@ -27,7 +27,7 @@ GroupClear(state_t *pState)
 static inline void
 GroupAdd(state_t *state, nodenum_t i)
 {
-	state->pGroupNodes[state->groupCount++] = i;
+	state->groupNodes[state->groupCount++] = i;
 	BitmapSet(state->pBitmapGroup, i, 1);
 //	state->groupBitmap[i] = true;
 }
@@ -35,7 +35,7 @@ GroupAdd(state_t *state, nodenum_t i)
 static inline nodenum_t
 GroupGet(state_t *state, count_t n)
 {
-	return state->pGroupNodes[n];
+	return state->groupNodes[n];
 }
 
 static inline bool

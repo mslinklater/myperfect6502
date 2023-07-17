@@ -24,7 +24,9 @@ struct  state_t {
 	nodenum_t vcc;
 
 	/* everything that describes a node */
-	bitmap_t *pPullupNodesBitmap;		// which ndoes are pullup
+	std::vector<bool> pullupNodes;
+//	std::vector<bool> pulldownNodes;
+
 	bitmap_t *pPulldownNodesBitmap;		// which nodes are pulldown
 	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
 

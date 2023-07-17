@@ -80,7 +80,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	{
 		state->groupContainsValue = EGroupContainsValue::kPulldown;
 	}
-	if (state->groupContainsValue < EGroupContainsValue::kPullup && GetNodePullup(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kPullup && state->pullupNodes[n]) 
 	{
 		state->groupContainsValue = EGroupContainsValue::kPullup;
 	}
@@ -268,7 +268,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->vcc = vcc;
 
 	// Bitmaps - large bit arrays
-	state->pPullupNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap)));
+//	state->pPullupNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap)));
+	state->pullupNodes.resize(state->numNodes);
 	state->pPulldownNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPulldownNodesBitmap)));
 	state->pNodesStateBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap)));
 
@@ -324,7 +325,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	/* copy nodes into r/w data structure */
 	for (i = 0; i < state->numNodes; i++) 
 	{
-		SetNodePullup(state, i, node_is_pullup[i]);
+//		SetNodePullup(state, i, node_is_pullup[i]);
+		state->pullupNodes[i] = node_is_pullup[i];
 		state->pNodeGateCount[i] = 0;
 	}
 
@@ -439,7 +441,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    free(state->pPullupNodesBitmap);
     free(state->pPulldownNodesBitmap);
     free(state->pNodesStateBitmap);
 
@@ -501,7 +502,7 @@ void
 SetNode(state_t *state, nodenum_t nodeNum, bool s)
 {
 	TRACE_PUSH("SetNode");
-	SetNodePullup(state, nodeNum, s);
+	state->pullupNodes[nodeNum] = s;
 	SetNodePulldown(state, nodeNum, !s);
 
 	ListOutAdd(state, nodeNum);

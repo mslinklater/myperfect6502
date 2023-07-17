@@ -49,7 +49,8 @@ struct  state_t {
 	nodenum_t *pTransistorsGate;
 	nodenum_t *pTransistorsC1;
 	nodenum_t *pTransistorsC2;
-	bitmap_t *pBitmapOnTransistors;
+
+	std::vector<bool> onTransistors;
 
 	// QUESTION - Can we have more list to multi-thread ?
 

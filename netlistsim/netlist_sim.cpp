@@ -10,7 +10,6 @@
 #include "types.h"
 #include "state.h"
 #include "algo_bitmap.h"
-#include "algo_transistor.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
 #include "trace.h"
@@ -29,9 +28,7 @@ c1c2(transnum_t tn, nodenum_t n)
  *
  ************************************************************/
 
-#define INCLUDED_FROM_NETLIST_SIM_C
 #include "netlist_sim.h"
-#undef INCLUDED_FROM_NETLIST_SIM_C
 
 /************************************************************
  *
@@ -51,7 +48,6 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	if (n == state->vss) 
 	{
 		state->groupContainsValue = EGroupContainsValue::kVss;
-//		state->EGroupContainsValue = kVss;
 		TRACE_POP();
 		return;
 	}
@@ -96,7 +92,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 		c1c2_t c = state->pNodeC1C2s[t];
 
 		/* if the transistor connects c1 and c2... */
-		if (GetTransistorOn(state, c.transistor)) 
+		if (state->onTransistors[c.transistor]) 
 		{
 			AddNodeToGroup(state, c.other_node);
 		}
@@ -163,7 +159,7 @@ RecalcNode(state_t *state, nodenum_t node)
 			for (count_t t = 0; t < state->pNodeGateCount[nn]; t++) 
 			{
 				transnum_t tn = state->ppNodeGates[nn][t];
-				SetTransistorOn(state, tn, newv);
+				state->onTransistors[tn] = newv;
 			}
 
 			if (newv) 
@@ -303,7 +299,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
 	state->pTransistorsC1 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC1)));
 	state->pTransistorsC2 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC2)));
-	state->pBitmapOnTransistors = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numTransistors), sizeof(*state->pBitmapOnTransistors)));
+//	state->pBitmapOnTransistors = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numTransistors), sizeof(*state->pBitmapOnTransistors)));
+	state->onTransistors.resize(state->numTransistors);
 
 	// list buffers
 	state->pNodeList[0] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->pNodeList[0])));
@@ -466,7 +463,7 @@ DestroyNodesAndTransistors(state_t *state)
     free(state->pTransistorsGate);
     free(state->pTransistorsC1);
     free(state->pTransistorsC2);
-    free(state->pBitmapOnTransistors);
+//    free(state->pBitmapOnTransistors);
     free(state->pNodeList[0]);
     free(state->pNodeList[1]);
     free(state->listout_bitmap);

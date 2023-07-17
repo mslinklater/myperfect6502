@@ -263,11 +263,9 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->vcc = vcc;
 
 	// Bitmaps - large bit arrays
-//	state->pPullupNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap)));
 	state->pullupNodes.resize(state->numNodes);
 	state->pulldownNodes.resize(state->numNodes);
 	state->nodeState.resize(state->numNodes);
-//	state->pNodesStateBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap)));
 
 	// array of arrays - not sure what these do yet...
 	state->ppNodeGates = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->ppNodeGates)));
@@ -299,7 +297,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->pTransistorsGate = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsGate)));
 	state->pTransistorsC1 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC1)));
 	state->pTransistorsC2 = reinterpret_cast<nodenum_t*>(calloc(state->numTransistors, sizeof(*state->pTransistorsC2)));
-//	state->pBitmapOnTransistors = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numTransistors), sizeof(*state->pBitmapOnTransistors)));
 	state->onTransistors.resize(state->numTransistors);
 
 	// list buffers
@@ -310,6 +307,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->pGroupNodes = reinterpret_cast<nodenum_t*>(malloc(state->numNodes * sizeof(*state->pGroupNodes)));
 
+//	state->groupBitmap.resize(state->numNodes);
+//	state->groupBitmap.clear();
 	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
 
 	state->listIn.pNodes = state->pNodeList[0];
@@ -322,7 +321,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	/* copy nodes into r/w data structure */
 	for (i = 0; i < state->numNodes; i++) 
 	{
-//		SetNodePullup(state, i, node_is_pullup[i]);
 		state->pullupNodes[i] = node_is_pullup[i];
 		state->pNodeGateCount[i] = 0;
 	}
@@ -463,7 +461,6 @@ DestroyNodesAndTransistors(state_t *state)
     free(state->pTransistorsGate);
     free(state->pTransistorsC1);
     free(state->pTransistorsC2);
-//    free(state->pBitmapOnTransistors);
     free(state->pNodeList[0]);
     free(state->pNodeList[1]);
     free(state->listout_bitmap);

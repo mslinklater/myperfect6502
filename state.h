@@ -28,8 +28,6 @@ struct  state_t {
 	std::vector<bool> pulldownNodes;
 	std::vector<bool> nodeState;
 
-//	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
-
 	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 
 	c1c2_t *pNodeC1C2s;
@@ -66,6 +64,7 @@ struct  state_t {
 	nodenum_t *pGroupNodes;
 	count_t groupCount;
 	bitmap_t *pBitmapGroup;
+//	std::vector<bool> groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;
 };

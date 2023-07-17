@@ -89,7 +89,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 
 	for (count_t t = state->pNodeC1C2Offset[n]; t < end; t++) 
 	{
-		c1c2_t c = state->pNodeC1C2s[t];
+		c1c2_t c = state->nodeC1C2s[t];
 
 		/* if the transistor connects c1 and c2... */
 		if (state->onTransistors[c.transistor]) 
@@ -156,7 +156,7 @@ RecalcNode(state_t *state, nodenum_t node)
 		{
 			state->nodeState[nn] = newv;
 
-			for (count_t t = 0; t < state->pNodeGateCount[nn]; t++) 
+			for (count_t t = 0; t < state->nodeGateCount[nn]; t++) 
 			{
 				transnum_t tn = state->ppNodeGates[nn][t];
 				state->onTransistors[tn] = newv;
@@ -274,7 +274,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		state->ppNodeGates[i] = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(**state->ppNodeGates)));
 	}
 
-	state->pNodeGateCount = reinterpret_cast<count_t*>(calloc(state->numNodes, sizeof(*state->pNodeGateCount)));
+	state->nodeGateCount.resize(state->numNodes);
 
 	state->pNodeC1C2Offset = reinterpret_cast<count_t*>(calloc(state->numNodes + 1, sizeof(*state->pNodeC1C2Offset)));
 
@@ -322,7 +322,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	for (i = 0; i < state->numNodes; i++) 
 	{
 		state->pullupNodes[i] = node_is_pullup[i];
-		state->pNodeGateCount[i] = 0;
+		state->nodeGateCount[i] = 0;
 	}
 
 	/* copy transistors into r/w data structure */
@@ -368,9 +368,9 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		nodenum_t c1 = state->pTransistorsC1[i];
 		nodenum_t c2 = state->pTransistorsC2[i];
 
-		nodenum_t gateCount = state->pNodeGateCount[gate];
+		nodenum_t gateCount = state->nodeGateCount[gate];
 		state->ppNodeGates[gate][gateCount] = i;
-		state->pNodeGateCount[gate]++;
+		state->nodeGateCount[gate]++;
 
 		c1c2count[c1]++;
 		c1c2count[c2]++;
@@ -388,16 +388,15 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->pNodeC1C2Offset[i] = c1c2offset;
 	/* create and fill the nodes_c1c2s array according to these offsets */
-	state->pNodeC1C2s = reinterpret_cast<c1c2_t*>(calloc(c1c2total, sizeof(*state->pNodeC1C2s)));
+	state->nodeC1C2s.resize(c1c2total);
 	memset(c1c2count, 0, state->numNodes * sizeof(*c1c2count));
-
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
 		nodenum_t c1 = state->pTransistorsC1[i];
 		nodenum_t c2 = state->pTransistorsC2[i];
-		state->pNodeC1C2s[state->pNodeC1C2Offset[c1] + c1c2count[c1]++] = c1c2(i, c2);
-		state->pNodeC1C2s[state->pNodeC1C2Offset[c2] + c1c2count[c2]++] = c1c2(i, c1);
+		state->nodeC1C2s[state->pNodeC1C2Offset[c1] + c1c2count[c1]++] = c1c2(i, c2);
+		state->nodeC1C2s[state->pNodeC1C2Offset[c2] + c1c2count[c2]++] = c1c2(i, c1);
 	}
 
 	free(c1c2count);
@@ -406,7 +405,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	{
 		state->nodes_dependants[i] = 0;
 		state->nodes_left_dependants[i] = 0;
-		for (count_t g = 0; g < state->pNodeGateCount[i]; g++) 
+		for (count_t g = 0; g < state->nodeGateCount[i]; g++) 
 		{
 			transnum_t t = state->ppNodeGates[i][g];
 			nodenum_t c1 = state->pTransistorsC1[t];
@@ -442,8 +441,6 @@ DestroyNodesAndTransistors(state_t *state)
     }
 
     free(state->ppNodeGates);
-    free(state->pNodeC1C2s);
-    free(state->pNodeGateCount);
     free(state->pNodeC1C2Offset);
     free(state->nodes_dependants);
     free(state->nodes_left_dependants);

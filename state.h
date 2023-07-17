@@ -30,9 +30,9 @@ struct  state_t {
 
 	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 
-	c1c2_t *pNodeC1C2s;
+	std::vector<c1c2_t> nodeC1C2s;
 
-	count_t *pNodeGateCount;
+	std::vector<count_t> nodeGateCount;
 
 	// Offsets in to the C1C2s array
 	count_t *pNodeC1C2Offset;

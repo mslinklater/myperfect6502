@@ -307,8 +307,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	state->pGroupNodes = reinterpret_cast<nodenum_t*>(malloc(state->numNodes * sizeof(*state->pGroupNodes)));
 
-//	state->groupBitmap.resize(state->numNodes);
-//	state->groupBitmap.clear();
+	//state->groupBitmap.resize(state->numNodes);
+	//state->groupBitmap.clear();
 	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
 
 	state->listIn.pNodes = state->pNodeList[0];

@@ -41,7 +41,7 @@ GroupGet(state_t *state, count_t n)
 static inline bool
 GroupContains(state_t *state, nodenum_t el)
 {
-//	return state->groupBitmap[el];
+	//return state->groupBitmap[el];
 	return BitmapGet(state->pBitmapGroup, el);
 }
 

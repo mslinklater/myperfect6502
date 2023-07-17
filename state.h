@@ -55,6 +55,8 @@ struct  state_t {
 	/* the nodes we are working with */
 	NodeList listIn;
 
+	bitmap_t *pBitmapGroup;
+
 	/* the indirect nodes we are collecting for the next run */
 	NodeList listOut;
 	nodenum_t* pNodeList[2];
@@ -63,7 +65,6 @@ struct  state_t {
 
 	nodenum_t *pGroupNodes;
 	count_t groupCount;
-	bitmap_t *pBitmapGroup;
 //	std::vector<bool> groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;

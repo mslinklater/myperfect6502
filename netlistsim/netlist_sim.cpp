@@ -159,6 +159,7 @@ RecalcNode(state_t *state, nodenum_t node)
 			for (count_t t = 0; t < state->nodeGateCount[nn]; t++) 
 			{
 				transnum_t tn = state->nodeGates[nn][t];
+				state->onTransistorsCount[tn]++;
 				state->onTransistors[tn] = newv;
 			}
 
@@ -171,7 +172,6 @@ RecalcNode(state_t *state, nodenum_t node)
 			} 
 			else 
 			{
-//				for (count_t g = 0; g < state->nodes_dependants[nn]; g++) 
 				for (count_t g = 0; g < state->nodesDeps[nn]; g++) 
 				{
 					ListOutAdd(state, state->nodesDependant[nn][g]);
@@ -230,26 +230,29 @@ RecalcNodeList(state_t *state)
  ************************************************************/
 
 static inline void
-add_nodes_dependant(state_t *state, nodenum_t a, nodenum_t b)
+AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)
 {
-//	for (count_t g = 0; g < state->nodes_dependants[a]; g++)
 	for (count_t g = 0; g < state->nodesDeps[a]; g++)
-
-	if (state->nodesDependant[a][g] == b)
 	{
-		return;
+		if (state->nodesDependant[a][g] == b)
+		{
+			return;
+		}
 	}
 
-//	state->nodes_dependant[a][state->nodes_dependants[a]++] = b;
 	state->nodesDependant[a][state->nodesDeps[a]++] = b;
 }
 
 static inline void
-add_nodes_left_dependant(state_t *state, nodenum_t a, nodenum_t b)
+AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b)
 {
 	for (count_t g = 0; g < state->nodesLeftDeps[a]; g++)
-	if (state->nodesLeftDependant[a][g] == b)
-	return;
+	{
+		if (state->nodesLeftDependant[a][g] == b)
+		{
+			return;
+		}
+	}
 
 	state->nodesLeftDependant[a][state->nodesLeftDeps[a]++] = b;
 }
@@ -282,11 +285,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->nodeC1C2Offset.resize(state->numNodes + 1);
 
 	state->nodesDeps.resize(state->numNodes);
-//	state->nodes_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_dependants)));
 	state->nodesLeftDeps.resize(state->numNodes);
-//	state->nodes_left_dependants = reinterpret_cast<nodenum_t*>(calloc(state->numNodes, sizeof(*state->nodes_left_dependants)));
 	state->nodesDependant.resize(state->numNodes);
-//	state->nodes_dependant = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->nodes_dependant)));
 
 	for (count_t i = 0; i < state->numNodes; i++) 
 	{
@@ -304,6 +304,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->transistorsC1.resize(state->numTransistors);
 	state->transistorsC2.resize(state->numTransistors);
 	state->onTransistors.resize(state->numTransistors);
+	state->onTransistorsCount.resize(state->numTransistors);
 
 	// list buffers
 	state->nodeList[0].resize(state->numNodes);
@@ -342,7 +343,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 		for (count_t j2 = 0; j2 < j; j2++) 
 		{
-//			if (state->pTransistorsGate[j2] == gate &&
 			if (state->transistorsGate[j2] == gate &&
 				((state->transistorsC1[j2] == c1 &&
 				  state->transistorsC2[j2] == c2) ||
@@ -354,7 +354,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 		}
 		if (!found) 
 		{
-//			state->pTransistorsGate[j] = gate;
 			state->transistorsGate[j] = gate;
 			state->transistorsC1[j] = c1;
 			state->transistorsC2[j] = c2;
@@ -409,7 +408,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numNodes; i++) 
 	{
-//		state->nodes_dependants[i] = 0;
 		state->nodesDeps[i] = 0;
 		state->nodesLeftDeps[i] = 0;
 		for (count_t g = 0; g < state->nodeGateCount[i]; g++) 
@@ -418,20 +416,20 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 			nodenum_t c1 = state->transistorsC1[t];
 			if (c1 != vss && c1 != vcc) 
 			{
-				add_nodes_dependant(state, i, c1);
+				AddNodesDependant(state, i, c1);
 			}
 			nodenum_t c2 = state->transistorsC2[t];
 			if (c2 != vss && c2 != vcc) 
 			{
-				add_nodes_dependant(state, i, c2);
+				AddNodesDependant(state, i, c2);
 			}
 			if (c1 != vss && c1 != vcc) 
 			{
-				add_nodes_left_dependant(state, i, c1);
+				AddNodesLeftDependant(state, i, c1);
 			} 
 			else 
 			{
-				add_nodes_left_dependant(state, i, c2);
+				AddNodesLeftDependant(state, i, c2);
 			}
 		}
 	}

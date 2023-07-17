@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 project(MyPerfect6502 LANGUAGES CXX)
 
-set(CMAKE_CXX_FLAGS "-D_DEBUG -g -O3 -Wno-write-strings -Wno-unused-result")
+set(CMAKE_CXX_FLAGS "-D_DEBUG -g -O0 -Wno-write-strings -Wno-unused-result")
 
 set(SOURCE_FILES perfect6502.cpp)
 

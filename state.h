@@ -49,6 +49,7 @@ struct  state_t {
 	std::vector<nodenum_t> transistorsC2;
 
 	std::vector<bool> onTransistors;
+	std::vector<int> onTransistorsCount;
 
 	/* the nodes we are working with */
 	NodeList listIn;

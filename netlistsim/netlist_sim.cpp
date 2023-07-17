@@ -117,7 +117,7 @@ AddAllNodesToGroup(state_t *state, nodenum_t node)
 	TRACE_POP();
 }
 
-static inline BOOL
+static inline bool
 GetGroupValue(state_t *state)
 {
 	switch (state->groupContainsValue) 
@@ -125,13 +125,13 @@ GetGroupValue(state_t *state)
 		case EGroupContainsValue::kVcc:
 		case EGroupContainsValue::kPullup:
 		case EGroupContainsValue::kHigh:
-			return YES;
+			return true;
 		case EGroupContainsValue::kVss:
 		case EGroupContainsValue::kPulldown:
 		case EGroupContainsValue::kNothing:
-			return NO;
+			return false;
 	}
-	return NO;
+	return false;
 }
 
 static inline void
@@ -314,10 +314,10 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 
 	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
 
-	state->listIn.list = state->pNodeList[0];
+	state->listIn.pNodes = state->pNodeList[0];
     state->listIn.count = 0;
 
-	state->listOut.list = state->pNodeList[1];
+	state->listOut.pNodes = state->pNodeList[1];
     state->listOut.count = 0;
 
 	count_t i;
@@ -337,7 +337,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 		nodenum_t c1 = pTransdefs[i].c1;
 		nodenum_t c2 = pTransdefs[i].c2;
 		/* skip duplicate transistors */
-		BOOL found = NO;
+		bool found = false;
 
 		for (count_t j2 = 0; j2 < j; j2++) 
 		{
@@ -347,7 +347,7 @@ SetupNodesAndTransistors(Transistor *pTransdefs, BOOL *node_is_pullup, nodenum_t
 				 (state->pTransistorsC1[j2] == c2 &&
 				  state->pTransistorsC2[j2] == c1))) 
 			{
-				found = YES;
+				found = true;
 			}
 		}
 		if (!found) 

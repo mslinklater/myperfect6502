@@ -27,7 +27,7 @@ typedef struct {
 
 /* list of nodes that need to be recalculated */
 typedef struct {
-	nodenum_t *list;
+	nodenum_t *pNodes;
 	count_t count;
 } NodeList;
 
@@ -37,6 +37,3 @@ typedef struct {
 	nodenum_t other_node;
 } c1c2_t;
 
-
-#define YES 1
-#define NO 0

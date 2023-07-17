@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 /************************************************************
  *
  * Main State Data Structure

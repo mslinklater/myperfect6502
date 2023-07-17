@@ -7,7 +7,7 @@
 static inline nodenum_t
 listin_get(state_t *state, count_t i)
 {
-	return state->listIn.list[i];
+	return state->listIn.pNodes[i];
 }
 
 static inline count_t
@@ -37,7 +37,7 @@ ListOutAdd(state_t *state, nodenum_t i)
 {
 	if (!BitmapGet(state->listout_bitmap, i)) 
 	{
-		state->listOut.list[state->listOut.count++] = i;
+		state->listOut.pNodes[ state->listOut.count++ ] = i;
 		
 		BitmapSet(state->listout_bitmap, i, 1);
 	}

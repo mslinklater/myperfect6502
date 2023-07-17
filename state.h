@@ -25,10 +25,10 @@ struct  state_t {
 
 	/* everything that describes a node */
 	std::vector<bool> pullupNodes;
-//	std::vector<bool> pulldownNodes;
+	std::vector<bool> pulldownNodes;
+	std::vector<bool> nodeState;
 
-	bitmap_t *pPulldownNodesBitmap;		// which nodes are pulldown
-	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
+//	bitmap_t *pNodesStateBitmap;		// Node state held in a bit array
 
 	nodenum_t **ppNodeGates;	// num-nodes size array of pointers... each one points to num-nodes array of shorts
 

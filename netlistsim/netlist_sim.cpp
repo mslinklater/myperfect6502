@@ -10,7 +10,6 @@
 #include "types.h"
 #include "state.h"
 #include "algo_bitmap.h"
-#include "algo_node.h"
 #include "algo_transistor.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
@@ -76,7 +75,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 
 	GroupAdd(state, n);
 
-	if (state->groupContainsValue < EGroupContainsValue::kPulldown && GetNodePulldown(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kPulldown && state->pulldownNodes[n]) 
 	{
 		state->groupContainsValue = EGroupContainsValue::kPulldown;
 	}
@@ -84,7 +83,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	{
 		state->groupContainsValue = EGroupContainsValue::kPullup;
 	}
-	if (state->groupContainsValue < EGroupContainsValue::kHigh && GetNodeState(state, n)) 
+	if (state->groupContainsValue < EGroupContainsValue::kHigh && state->nodeState[n]) 
 	{
 		state->groupContainsValue = EGroupContainsValue::kHigh;
 	}
@@ -157,9 +156,9 @@ RecalcNode(state_t *state, nodenum_t node)
 	{
 		nodenum_t nn = GroupGet(state, i);
 
-		if (GetNodeState(state, nn) != newv) 
+		if (state->nodeState[nn] != newv) 
 		{
-			SetNodeState(state, nn, newv);
+			state->nodeState[nn] = newv;
 
 			for (count_t t = 0; t < state->pNodeGateCount[nn]; t++) 
 			{
@@ -270,8 +269,9 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	// Bitmaps - large bit arrays
 //	state->pPullupNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPullupNodesBitmap)));
 	state->pullupNodes.resize(state->numNodes);
-	state->pPulldownNodesBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pPulldownNodesBitmap)));
-	state->pNodesStateBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap)));
+	state->pulldownNodes.resize(state->numNodes);
+	state->nodeState.resize(state->numNodes);
+//	state->pNodesStateBitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pNodesStateBitmap)));
 
 	// array of arrays - not sure what these do yet...
 	state->ppNodeGates = reinterpret_cast<nodenum_t**>(malloc(state->numNodes * sizeof(*state->ppNodeGates)));
@@ -441,9 +441,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    free(state->pPulldownNodesBitmap);
-    free(state->pNodesStateBitmap);
-
     for (count_t i = 0; i < state->numNodes; i++) 
 	{
         free(state->ppNodeGates[i]);
@@ -503,7 +500,7 @@ SetNode(state_t *state, nodenum_t nodeNum, bool s)
 {
 	TRACE_PUSH("SetNode");
 	state->pullupNodes[nodeNum] = s;
-	SetNodePulldown(state, nodeNum, !s);
+	state->pulldownNodes[nodeNum] = !s;
 
 	ListOutAdd(state, nodeNum);
 
@@ -514,7 +511,7 @@ SetNode(state_t *state, nodenum_t nodeNum, bool s)
 bool
 IsNodeHigh(state_t *state, nodenum_t nn)
 {
-	return GetNodeState(state, nn);
+	return state->nodeState[nn];
 }
 
 /************************************************************

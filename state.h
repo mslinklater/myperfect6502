@@ -60,9 +60,8 @@ struct  state_t {
 	std::vector<nodenum_t> groupNodes;
 	count_t groupCount;
 
-	bitmap_t *listout_bitmap;
-	bitmap_t *pBitmapGroup;
-//	std::vector<bool>groupBitmap;
+	std::vector<bool>listoutBitmap;
+	std::vector<bool>groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;
 };

@@ -309,13 +309,11 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 	state->nodeList[0].resize(state->numNodes);
 	state->nodeList[1].resize(state->numNodes);
 
-	state->listout_bitmap = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->listout_bitmap)));
+	state->listoutBitmap.resize(state->numNodes);
 
 	state->groupNodes.resize(state->numNodes);
 
-	//state->groupBitmap.resize(state->numNodes);
-	//state->groupBitmap.clear();
-	state->pBitmapGroup = reinterpret_cast<bitmap_t*>(calloc(BitmapGetRequiredSize(state->numNodes), sizeof(*state->pBitmapGroup)));
+	state->groupBitmap.resize(state->numNodes);
 
 	state->listIn.pNodes = state->nodeList[0].data();
     state->listIn.count = 0;
@@ -444,8 +442,6 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    free(state->listout_bitmap);
-    free(state->pBitmapGroup);
     free(state);
 }
 

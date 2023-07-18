@@ -1,5 +1,6 @@
-Transistor
-netlist_6502_transdefs[] = {
+//Transistor
+//netlist_6502_transdefs[] = {
+std::vector<Transistor> netlist_6502_transdefs = {
 	{710, 524, 1548},
 	{38, 1247, 657},
 	{1248, 558, 155},

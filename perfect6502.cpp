@@ -179,14 +179,10 @@ state_t *
 InitAndResetChip()
 {
 	/* set up data structures for efficient emulation */
-	nodenum_t nodes = sizeof(netlist_6502_node_is_pullup)/sizeof(*netlist_6502_node_is_pullup);
+//	nodenum_t nodes = sizeof(netlist_6502_node_is_pullup)/sizeof(*netlist_6502_node_is_pullup);
 
-	nodenum_t transistors = sizeof(netlist_6502_transdefs)/sizeof(*netlist_6502_transdefs);
-	
 	state_t *state = SetupNodesAndTransistors(netlist_6502_transdefs,
 										   netlist_6502_node_is_pullup,
-										   nodes,
-										   transistors,
 										   vss,
 										   vcc);
 

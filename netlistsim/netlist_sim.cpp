@@ -258,15 +258,15 @@ AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b)
 }
 
 state_t *
-SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
+SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc)
 {
 	/* allocate state */
 	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
 
 	state->maxGroupCount = 0;
 
-	state->numNodes = numNodes;
-	state->numTransistors = numTransistors;
+	state->numNodes = node_is_pullup.size();
+	state->numTransistors = transdefs.size();
 	state->vss = vss;
 	state->vcc = vcc;
 
@@ -337,9 +337,9 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 
 	for (i = 0; i < state->numTransistors; i++) 
 	{
-		nodenum_t gate = pTransdefs[i].gate;
-		nodenum_t c1 = pTransdefs[i].c1;
-		nodenum_t c2 = pTransdefs[i].c2;
+		nodenum_t gate = transdefs[i].gate;
+		nodenum_t c1 = transdefs[i].c1;
+		nodenum_t c2 = transdefs[i].c2;
 		/* skip duplicate transistors */
 		bool found = false;
 

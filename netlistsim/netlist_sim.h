@@ -2,7 +2,7 @@ struct state_t;
 
 // The public API to the netlist simulation
 
-state_t* SetupNodesAndTransistors(Transistor *transdefs, bool *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
+state_t* SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc);
 
 void DestroyNodesAndTransistors(state_t *state);
 

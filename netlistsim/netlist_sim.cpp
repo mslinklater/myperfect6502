@@ -9,7 +9,6 @@
 #include <string.h>
 #include "types.h"
 #include "state.h"
-#include "algo_bitmap.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
 #include "trace.h"

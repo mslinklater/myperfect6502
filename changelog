@@ -1,0 +1,7 @@
+# Changelog
+
+* Optimised bitmap clear - it's sparse array so just un-set the flags that were set the last go around rather than memset the entire memory block to zero
+* Moved to STL containers for data structures rather than raw pointer memory blocks
+* Added command line parameters for ROM loading etc
+* Moved to C++
+* Moved to CMake instead of Make

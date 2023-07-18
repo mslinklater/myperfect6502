@@ -2,3 +2,4 @@
 netlistsim/*.o
 cbmbasic/cbmbasic
 build
+gmon.out

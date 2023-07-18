@@ -9,7 +9,6 @@
 #include <string.h>
 #include "types.h"
 #include "state.h"
-#include "algo_bitmap.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
 #include "trace.h"
@@ -63,7 +62,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	}
 
 	// If group already contains this node, return
-	if (GroupContains(state, n))
+	if (state->groupBitmap[n])	//GroupContains(state, n))
 	{
 		TRACE_POP();
 		return;
@@ -150,7 +149,7 @@ RecalcNode(state_t *state, nodenum_t node)
 	 */
 	for (count_t i = 0; i < state->groupCount; i++) 
 	{
-		nodenum_t nn = GroupGet(state, i);
+		nodenum_t nn = state->groupNodes[i];	//GroupGet(state, i);
 
 		if (state->nodeState[nn] != newv) 
 		{
@@ -197,7 +196,7 @@ RecalcNodeList(state_t *state)
 		 */
 		ListsSwitch(state);
 
-		if (!ListInCount(state))
+		if (!state->listIn.count)	//ListInCount(state))
 		{
 			TRACE_POP();
 			break;
@@ -212,9 +211,10 @@ RecalcNodeList(state_t *state)
 		 * all transistors controlled by this path, collecting
 		 * all nodes that changed because of it for the next run
 		 */
-		for (count_t i = 0; i < ListInCount(state); i++) 
+//		for (count_t i = 0; i < ListInCount(state); i++) 
+		for (count_t i = 0; i < state->listIn.count; i++) 
 		{
-			nodenum_t n = listin_get(state, i);
+			nodenum_t n = state->listIn.pNodes[i];	//listin_get(state, i);
 			RecalcNode(state, n);
 		}
 		TRACE_POP();
@@ -262,6 +262,8 @@ SetupNodesAndTransistors(Transistor *pTransdefs, bool *node_is_pullup, nodenum_t
 {
 	/* allocate state */
 	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
+
+	state->maxGroupCount = 0;
 
 	state->numNodes = numNodes;
 	state->numTransistors = numTransistors;

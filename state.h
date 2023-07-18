@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <set>
 
 /************************************************************
  *
@@ -65,4 +66,6 @@ struct  state_t {
 	std::vector<bool>groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;
+
+	int maxGroupCount;
 };

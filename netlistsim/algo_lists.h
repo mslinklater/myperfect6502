@@ -3,19 +3,6 @@
  * Algorithms for Lists
  *
  ************************************************************/
-
-static inline nodenum_t
-listin_get(state_t *state, count_t i)
-{
-	return state->listIn.pNodes[i];
-}
-
-static inline count_t
-ListInCount(state_t *state)
-{
-	return state->listIn.count;
-}
-
 static inline void
 ListsSwitch(state_t *state)
 {
@@ -38,7 +25,6 @@ ListOutAdd(state_t *state, nodenum_t i)
 	if (!state->listoutBitmap[i]) 
 	{
 		state->listOut.pNodes[ state->listOut.count++ ] = i;
-		
 		state->listoutBitmap[i] = true;
 	}
 }

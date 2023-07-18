@@ -3,6 +3,7 @@
 #include "runtime_init.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "netlistsim.h"
 
 int
 main( int argv, char** argc)
@@ -11,6 +12,8 @@ main( int argv, char** argc)
 	int address = atoi(argc[2]);
 	int numClocksToRun = atoi(argc[3]);
 	int isBasic = atoi(argc[4]);
+
+	NetListSim netListSim;
 
 	state_t* pState = InitAndResetChip();
 
@@ -30,7 +33,7 @@ main( int argv, char** argc)
 		}
 //		chipStatus(pState);
 
-		if (!(i % 1000)) printf("%d\n", i);
+//		if (!(i % 1000)) printf("%d\n", i);
 	};
 	int bp=0;
 	bp++;

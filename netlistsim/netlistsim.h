@@ -5,6 +5,9 @@
 class NetListSim
 {
 public:
+	NetListSim(){}
+	virtual ~NetListSim(){}
+
     void SetupNodesAndTransistors(Transistor *transdefs, bool *node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
 
     void DestroyNodesAndTransistors();

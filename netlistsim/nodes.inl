@@ -1,4 +1,4 @@
-enum {
+enum ENode {
 //	D1x1 = 827,
 	a0 = 737,		// What ?
 	a1 = 1234,

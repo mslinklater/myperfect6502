@@ -30,7 +30,7 @@ main( int argv, char** argc)
 		}
 //		chipStatus(pState);
 
-		//if (!(i % 1000)) printf("%d\n", i);
+		if (!(i % 1000)) printf("%d\n", i);
 	};
 	int bp=0;
 	bp++;

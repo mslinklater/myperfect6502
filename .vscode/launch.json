@@ -33,7 +33,7 @@
 			"type": "cppdbg",
 			"request": "launch",
 			"program": "${workspaceFolder}/build/myperfect6502",
-			"args": ["combat4k.bin", "61440", "1000", "0"],
+			"args": ["combat4k.bin", "61440", "10000", "0"],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",
 			"environment": [],

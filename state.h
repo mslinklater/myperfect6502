@@ -65,4 +65,6 @@ struct  state_t {
 	std::vector<bool>groupBitmap;
 	
 	EGroupContainsValue groupContainsValue;
+
+	int maxGroupCount;
 };

@@ -18,6 +18,7 @@ static inline void
 GroupClear(state_t *pState)
 {
 	TRACE_PUSH("GroupClear");
+	// unwind the set bits - faster than clearing the whole bitmap
 	for(int i=0 ; i<pState->groupCount ; i++)
 		pState->groupBitmap[pState->groupNodes[i]] = false;
 	pState->groupCount = 0;
@@ -27,19 +28,11 @@ GroupClear(state_t *pState)
 static inline void
 GroupAdd(state_t *state, nodenum_t i)
 {
+	TRACE_PUSH("GroupAdd");
 	state->groupNodes[state->groupCount++] = i;
 	state->groupBitmap[i] = true;
-}
-
-static inline nodenum_t
-GroupGet(state_t *state, count_t n)
-{
-	return state->groupNodes[n];
-}
-
-static inline bool
-GroupContains(state_t *state, nodenum_t el)
-{
-	return state->groupBitmap[el];
+	if(state->maxGroupCount < state->groupCount)
+		state->maxGroupCount = state->groupCount;
+	TRACE_POP();
 }
 

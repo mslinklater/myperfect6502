@@ -3,19 +3,13 @@
  * Algorithms for Lists
  *
  ************************************************************/
-
-static inline nodenum_t
-listin_get(state_t *state, count_t i)
-{
-	return state->listIn.pNodes[i];
-}
-
+#if 0
 static inline count_t
 ListInCount(state_t *state)
 {
 	return state->listIn.count;
 }
-
+#endif
 static inline void
 ListsSwitch(state_t *state)
 {

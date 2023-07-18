@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-typedef uint64_t bitmap_t;
-#define BITMAP_SHIFT 6
-#define BITMAP_MASK 63
-#define ONE 1ULL
+//typedef uint64_t bitmap_t;
+//#define BITMAP_SHIFT 6
+//#define BITMAP_MASK 63
+//#define ONE 1ULL
 
 typedef uint16_t nodenum_t;
 

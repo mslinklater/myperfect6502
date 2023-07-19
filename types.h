@@ -26,5 +26,5 @@ typedef struct {
 typedef struct {
 	transnum_t transistor;
 	nodenum_t other_node;
-} c1c2_t;
+} C1C2;
 

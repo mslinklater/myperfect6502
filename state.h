@@ -31,7 +31,7 @@ struct  state_t {
 
 	std::vector<std::vector<nodenum_t>> nodeGates;
 
-	std::vector<c1c2_t> nodeC1C2s;
+	std::vector<C1C2> nodeC1C2s;
 
 	std::vector<count_t> nodeGateCount;
 

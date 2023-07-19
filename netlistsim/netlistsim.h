@@ -2,6 +2,15 @@
 
 #include "types.h"
 
+/*
+Terminology:
+
+Transistor - as you would expect
+Node - an island of electrical potential... a wire... nodes are what connect transistors
+Group - A node state... what the electrical properties are
+
+*/
+
 class NetListSim
 {
 public:
@@ -33,7 +42,7 @@ public:
 	typedef struct {
 		transnum_t transistor;
 		nodenum_t other_node;
-	} c1c2_t;
+	} C1C2;
 
 	NetListSim(){}
 	virtual ~NetListSim(){}
@@ -63,5 +72,12 @@ public:
 
     void StabilizeChip() {}
 private:
+	nodenum_t	numNodes;
+	nodenum_t	numTransistors;
+	nodenum_t	vss;
+	nodenum_t	vcc;
 
+	std::vector<bool> pullupNodes;
+	std::vector<bool> pulldownNodes;
+	std::vector<bool> nodeState;
 };

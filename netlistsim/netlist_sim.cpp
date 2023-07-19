@@ -13,11 +13,11 @@
 #include "algo_groups.h"
 #include "trace.h"
 
-// creates a c1c2_t structure
-static inline c1c2_t
-c1c2(transnum_t tn, nodenum_t n)
+// creates a C1C2 structure - measure this...
+static inline C1C2
+NewC1C2(transnum_t tn, nodenum_t n)
 {
-	c1c2_t c = { tn, n };
+	C1C2 c = { tn, n };
 	return c;
 }
 
@@ -88,7 +88,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 
 	for (count_t t = state->nodeC1C2Offset[n]; t < end; t++) 
 	{
-		c1c2_t c = state->nodeC1C2s[t];
+		C1C2 c = state->nodeC1C2s[t];
 
 		/* if the transistor connects c1 and c2... */
 		if (state->onTransistors[c.transistor]) 
@@ -402,8 +402,8 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 	{
 		nodenum_t c1 = state->transistorsC1[i];
 		nodenum_t c2 = state->transistorsC2[i];
-		state->nodeC1C2s[state->nodeC1C2Offset[c1] + c1c2count[c1]++] = c1c2(i, c2);
-		state->nodeC1C2s[state->nodeC1C2Offset[c2] + c1c2count[c2]++] = c1c2(i, c1);
+		state->nodeC1C2s[state->nodeC1C2Offset[c1] + c1c2count[c1]++] = NewC1C2(i, c2);
+		state->nodeC1C2s[state->nodeC1C2Offset[c2] + c1c2count[c2]++] = NewC1C2(i, c1);
 	}
 
 	free(c1c2count);

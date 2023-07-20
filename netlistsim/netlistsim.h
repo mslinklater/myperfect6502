@@ -1,6 +1,7 @@
 # pragma once
 
 #include "types.h"
+#include <map>
 
 /*
 Terminology:
@@ -14,6 +15,9 @@ Group - A node state... what the electrical properties are
 class NetListSim
 {
 public:
+
+	// Some types and simple structures used internally
+
 	enum EGroup {
 		kNothing,
 		kHigh,
@@ -28,9 +32,9 @@ public:
 	typedef uint16_t count_t;
 
 	typedef struct {
-		nodenum_t gate;
-		nodenum_t c1;
-		nodenum_t c2;
+		nodenum_t gate;		// out
+		nodenum_t c1;		// source ?
+		nodenum_t c2;		// drain ?
 	} Transistor;
 
 	typedef struct {
@@ -51,8 +55,12 @@ public:
 		return c;
 	}
 
+	// Lifecycle
+
 	NetListSim(){}
 	virtual ~NetListSim(){}
+
+	// The public API - call this stuff from your own code... it should do everything you need
 
     void SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
 
@@ -66,22 +74,32 @@ public:
 
 private:
 
+	// Internal methods
+
 	void AddNodesDependant(nodenum_t a, nodenum_t b);
-	
+
 	void AddNodesLeftDependant(nodenum_t a, nodenum_t b);
 
 private:
 	nodenum_t	numNodes;
 	nodenum_t	numTransistors;
-	nodenum_t	vss;
-	nodenum_t	vcc;
 
+	nodenum_t	vss;	// Ground... 0V
+	nodenum_t	vcc;	// +V
+
+	// Bit array of nodes which are pull-up. This is initialised from the input data
 	std::vector<bool> pullupNodes;
+
+	// Bit array of nodes which have been pulled down temporarily
 	std::vector<bool> pulldownNodes;
+
+	// Bit array of the actual charge state of a node
 	std::vector<bool> nodeState;
 
+	// 2D matrix of the node gates... need to get the structure of this
 	std::vector<std::vector<nodenum_t>> nodeGates;
 
+	// The two inputs (collector and base) of a transistor
 	std::vector<C1C2> nodeC1C2s;
 
 	std::vector<count_t> nodeGateCount;
@@ -120,4 +138,5 @@ private:
 	// Debug/analysis stuff
 
 	std::vector<int> onTransistorsCount;
+	std::map<std::string, nodenum_t> nameNodeMap;
 };

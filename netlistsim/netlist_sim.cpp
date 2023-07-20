@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "types.h"
 #include "state.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
@@ -47,6 +46,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	if (n == state->vss) 
 	{
 		state->groupContainsValue = EGroupContainsValue::kVss;
+		
 		TRACE_POP();
 		return;
 	}

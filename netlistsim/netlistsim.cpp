@@ -4,7 +4,7 @@
 // creates a C1C2 structure - measure this...
 // This needs to go somewhere sensible
 
-void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc)
+void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc)
 {
 	numNodes = node_is_pullup.size();
 	numTransistors = transdefs.size();

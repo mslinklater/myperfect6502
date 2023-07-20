@@ -21,7 +21,6 @@
  */
 
 #include <stdio.h>
-#include "types.h"
 #include "netlistsim/netlist_sim.h"
 /* nodes & transistors */
 #include "netlist_6502.h"

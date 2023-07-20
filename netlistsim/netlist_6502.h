@@ -9,7 +9,6 @@
  for original source material:  www.visual6502.org
  */
 
-#include "types.h"
 #include "nodes.inl"
 #include "pullup.inl"
 #include "transistors.inl"

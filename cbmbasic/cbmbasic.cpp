@@ -5,6 +5,8 @@
 #include "stdlib.h"
 #include "netlistsim.h"
 
+#include "netlist_6502.h"
+
 int
 main( int argv, char** argc)
 {
@@ -14,6 +16,7 @@ main( int argv, char** argc)
 	int isBasic = atoi(argc[4]);
 
 	NetListSim netListSim;
+	netListSim.SetupNodesAndTransistors(netlist_6502_transdefs, netlist_6502_node_is_pullup, vss, vcc);
 
 	state_t* pState = InitAndResetChip();
 

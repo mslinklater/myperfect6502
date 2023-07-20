@@ -1,3 +1,5 @@
+#include "netlistsim.h"
+
 struct state_t;
 
 // The public API to the netlist simulation

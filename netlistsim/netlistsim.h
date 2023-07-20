@@ -1,7 +1,8 @@
 # pragma once
 
-#include "types.h"
 #include <map>
+#include <string>
+#include <vector>
 
 /*
 Terminology:
@@ -11,6 +12,28 @@ Node - an island of electrical potential... a wire... nodes are what connect tra
 Group - A node state... what the electrical properties are
 
 */
+
+typedef uint16_t nodenum_t;
+typedef uint16_t transnum_t;
+typedef uint16_t count_t;
+
+typedef struct {
+	int gate;
+	int c1;
+	int c2;
+} Transistor;
+
+/* list of nodes that need to be recalculated */
+typedef struct {
+	nodenum_t *pNodes;
+	count_t count;
+} NodeList;
+
+/* a transistor from the point of view of one of the connected nodes */
+typedef struct {
+	transnum_t transistor;
+	nodenum_t other_node;
+} C1C2;
 
 class NetListSim
 {
@@ -30,12 +53,6 @@ public:
 	typedef uint16_t nodenum_t;
 	typedef uint16_t transnum_t;
 	typedef uint16_t count_t;
-
-	typedef struct {
-		nodenum_t gate;		// out
-		nodenum_t c1;		// source ?
-		nodenum_t c2;		// drain ?
-	} Transistor;
 
 	typedef struct {
 		nodenum_t *pNodes;
@@ -62,7 +79,7 @@ public:
 
 	// The public API - call this stuff from your own code... it should do everything you need
 
-    void SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t numNodes, nodenum_t numTransistors, nodenum_t vss, nodenum_t vcc);
+    void SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc);
 
     void DestroyNodesAndTransistors();
     void SetNode(nodenum_t nn, bool s);

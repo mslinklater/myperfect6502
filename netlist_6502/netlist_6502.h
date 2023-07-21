@@ -9,7 +9,10 @@
  for original source material:  www.visual6502.org
  */
 
-#include "nodes.inl"
-#include "pullup.inl"
-#include "transistors.inl"
+#pragma once
+#include <vector>
+#include "netlisttypes.h"
 
+#include "nodes.inl"
+extern std::vector<bool> netlist_6502_node_is_pullup;
+extern std::vector<Transistor> netlist_6502_transdefs;

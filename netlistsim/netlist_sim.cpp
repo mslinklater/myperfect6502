@@ -273,7 +273,6 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 	// Bitmaps - large bit arrays
 	state->pullupNodes.resize(state->numNodes);
 	state->pulldownNodes.resize(state->numNodes);
-	state->nodeState.resize(state->numNodes);
 
 	// array of arrays - not sure what these do yet...
 	state->nodeGates.resize(state->numNodes);
@@ -281,6 +280,8 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 	{
 		state->nodeGates[i].resize(state->numNodes);
 	}
+
+	state->nodeState.resize(state->numNodes);
 
 	state->nodeGateCount.resize(state->numNodes);
 

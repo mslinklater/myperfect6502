@@ -10,9 +10,11 @@ set(SOURCE_FILES perfect6502.cpp)
 
 add_subdirectory("cbmbasic")
 add_subdirectory("netlistsim")
+add_subdirectory("netlist_6502")
 
 include_directories("cbmbasic")
 include_directories("netlistsim")
+include_directories("netlist_6502")
 include_directories(".")
 
 add_executable(myperfect6502 ${SOURCE_FILES})

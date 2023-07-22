@@ -38,6 +38,5 @@ main( int argv, char** argc)
 
 //		if (!(i % 1000)) printf("%d\n", i);
 	};
-	int bp=0;
-	bp++;
+	destroyChip(pState);
 }

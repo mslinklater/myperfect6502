@@ -261,7 +261,8 @@ state_t *
 SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc)
 {
 	/* allocate state */
-	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
+//	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
+	state_t* state = new state_t;
 
 	state->maxGroupCount = 0;
 
@@ -443,7 +444,7 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 void
 DestroyNodesAndTransistors(state_t *state)
 {
-    free(state);
+    delete state;
 }
 
 void

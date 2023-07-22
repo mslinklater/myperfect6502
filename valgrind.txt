@@ -1,0 +1,336 @@
+==93299== Memcheck, a memory error detector
+==93299== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==93299== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==93299== Command: ./build/myperfect6502 cbmbasic/cbmbasic.bin 40960 500 1
+==93299== 
+==93299== Mismatched free() / delete / delete []
+==93299==    at 0x484B27F: free (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11082A: DestroyNodesAndTransistors(state_t*) (netlist_sim.cpp:447)
+==93299==    by 0x10B02B: destroyChip(state_t*) (perfect6502.cpp:213)
+==93299==    by 0x10B299: main (cbmbasic.cpp:41)
+==93299==  Address 0x4ded270 is 0 bytes inside a block of size 664 alloc'd
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x10FBD2: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:265)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 
+==93299== HEAP SUMMARY:
+==93299==     in use at exit: 18,064,634 bytes in 5,196 blocks
+==93299==   total heap usage: 493,410 allocs, 488,214 frees, 27,523,457 bytes allocated
+==93299== 
+==93299== 216 bytes in 1 blocks are definitely lost in loss record 1 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FC62: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:275)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 216 bytes in 1 blocks are definitely lost in loss record 2 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FC85: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:276)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 216 bytes in 1 blocks are definitely lost in loss record 3 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FD1D: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:285)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 216 bytes in 1 blocks are definitely lost in loss record 4 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FFA2: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:317)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 216 bytes in 1 blocks are definitely lost in loss record 5 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FFE9: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:321)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 440 bytes in 1 blocks are definitely lost in loss record 6 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116DE9: __gnu_cxx::new_allocator<unsigned long>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x115D82: allocate (allocator.h:185)
+==93299==    by 0x115D82: std::allocator_traits<std::allocator<unsigned long> >::allocate(std::allocator<unsigned long>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x115177: std::_Bvector_base<std::allocator<bool> >::_M_allocate(unsigned long) (stl_bvector.h:550)
+==93299==    by 0x114333: std::vector<bool, std::allocator<bool> >::_M_fill_insert(std::_Bit_iterator, unsigned long, bool) (vector.tcc:840)
+==93299==    by 0x112F79: std::vector<bool, std::allocator<bool> >::insert(std::_Bit_const_iterator, unsigned long, bool const&) (stl_bvector.h:1042)
+==93299==    by 0x11232B: std::vector<bool, std::allocator<bool> >::resize(unsigned long, bool) (stl_bvector.h:1083)
+==93299==    by 0x10FF19: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:310)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are possibly lost in loss record 7 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FE02: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:297)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 8 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FD3E: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:287)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 9 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FD85: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:291)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 10 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FDA6: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:292)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 11 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FF5B: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:314)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 12 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FF7C: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:315)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,450 bytes in 1 blocks are definitely lost in loss record 13 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FFC3: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:319)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 3,452 bytes in 1 blocks are definitely lost in loss record 14 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FD64: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:289)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 7,020 bytes in 1 blocks are definitely lost in loss record 15 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FEB1: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:307)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 7,020 bytes in 1 blocks are definitely lost in loss record 16 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FED2: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:308)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 7,020 bytes in 1 blocks are definitely lost in loss record 17 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FEF3: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:309)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 14,040 bytes in 1 blocks are definitely lost in loss record 18 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116AD9: __gnu_cxx::new_allocator<int>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11575B: allocate (allocator.h:185)
+==93299==    by 0x11575B: std::allocator_traits<std::allocator<int> >::allocate(std::allocator<int>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x1149DB: std::_Vector_base<int, std::allocator<int> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x113679: std::vector<int, std::allocator<int> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x1124CC: std::vector<int, std::allocator<int> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FF3A: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:311)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 25,912 bytes in 1 blocks are definitely lost in loss record 19 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x116C45: __gnu_cxx::new_allocator<C1C2>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x1158AB: allocate (allocator.h:185)
+==93299==    by 0x1158AB: std::allocator_traits<std::allocator<C1C2> >::allocate(std::allocator<C1C2>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114B8D: std::_Vector_base<C1C2, std::allocator<C1C2> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x113931: std::vector<C1C2, std::allocator<C1C2> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x1125B2: std::vector<C1C2, std::allocator<C1C2> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x1104BB: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:400)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 5,940,900 (41,400 direct, 5,899,500 indirect) bytes in 1 blocks are definitely lost in loss record 20 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11680E: __gnu_cxx::new_allocator<std::vector<unsigned short, std::allocator<unsigned short> > >::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x1154BB: allocate (allocator.h:185)
+==93299==    by 0x1154BB: std::allocator_traits<std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::allocate(std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > >&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114677: std::_Vector_base<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x113106: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x1123A2: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FE3C: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:300)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 5,947,800 bytes in 1,724 blocks are indirectly lost in loss record 21 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FE02: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:297)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 5,951,250 bytes in 1,725 blocks are indirectly lost in loss record 22 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FCE1: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:282)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 5,951,250 bytes in 1,725 blocks are indirectly lost in loss record 23 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11697B: __gnu_cxx::new_allocator<unsigned short>::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x11560A: allocate (allocator.h:185)
+==93299==    by 0x11560A: std::allocator_traits<std::allocator<unsigned short> >::allocate(std::allocator<unsigned short>&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114829: std::_Vector_base<unsigned short, std::allocator<unsigned short> >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x1133E4: std::vector<unsigned short, std::allocator<unsigned short> >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x11243C: std::vector<unsigned short, std::allocator<unsigned short> >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FE77: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:304)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 5,989,200 (41,400 direct, 5,947,800 indirect) bytes in 1 blocks are definitely lost in loss record 24 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11680E: __gnu_cxx::new_allocator<std::vector<unsigned short, std::allocator<unsigned short> > >::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x1154BB: allocate (allocator.h:185)
+==93299==    by 0x1154BB: std::allocator_traits<std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::allocate(std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > >&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114677: std::_Vector_base<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x113106: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x1123A2: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FDC7: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:293)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== 6,044,400 (41,400 direct, 6,003,000 indirect) bytes in 1 blocks are definitely lost in loss record 25 of 25
+==93299==    at 0x4849013: operator new(unsigned long) (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==93299==    by 0x11680E: __gnu_cxx::new_allocator<std::vector<unsigned short, std::allocator<unsigned short> > >::allocate(unsigned long, void const*) (new_allocator.h:127)
+==93299==    by 0x1154BB: allocate (allocator.h:185)
+==93299==    by 0x1154BB: std::allocator_traits<std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::allocate(std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > >&, unsigned long) (alloc_traits.h:464)
+==93299==    by 0x114677: std::_Vector_base<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_allocate(unsigned long) (stl_vector.h:346)
+==93299==    by 0x113106: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::_M_default_append(unsigned long) (vector.tcc:635)
+==93299==    by 0x1123A2: std::vector<std::vector<unsigned short, std::allocator<unsigned short> >, std::allocator<std::vector<unsigned short, std::allocator<unsigned short> > > >::resize(unsigned long) (stl_vector.h:940)
+==93299==    by 0x10FCA6: SetupNodesAndTransistors(std::vector<Transistor, std::allocator<Transistor> >&, std::vector<bool, std::allocator<bool> >&, unsigned short, unsigned short) (netlist_sim.cpp:279)
+==93299==    by 0x10AF2A: InitAndResetChip() (perfect6502.cpp:183)
+==93299==    by 0x10B21D: main (cbmbasic.cpp:21)
+==93299== 
+==93299== LEAK SUMMARY:
+==93299==    definitely lost: 210,884 bytes in 21 blocks
+==93299==    indirectly lost: 17,850,300 bytes in 5,174 blocks
+==93299==      possibly lost: 3,450 bytes in 1 blocks
+==93299==    still reachable: 0 bytes in 0 blocks
+==93299==         suppressed: 0 bytes in 0 blocks
+==93299== 
+==93299== For lists of detected and suppressed errors, rerun with: -s
+==93299== ERROR SUMMARY: 23 errors from 23 contexts (suppressed: 0 from 0)

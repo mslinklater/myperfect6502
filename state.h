@@ -19,7 +19,8 @@ enum EGroupContainsValue {
 	kVss
 };
 
-struct  state_t {
+class state_t {
+public:
 	nodenum_t numNodes;
 	nodenum_t numTransistors;
 	nodenum_t vss;
@@ -69,4 +70,11 @@ struct  state_t {
 	EGroupContainsValue groupContainsValue;
 
 	int maxGroupCount;
+
+	state_t()
+		: groupCount(0)
+	{}
+
+	virtual ~state_t(){}
+
 };

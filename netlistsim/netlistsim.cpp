@@ -127,11 +127,11 @@ void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transde
 		assert(c1 < numNodes);
 		assert(c2 < numNodes);
 
-		c1c2count[c1] = 1;
-//		c1c2count[c2]++;
+		c1c2count[c1]++;
+		c1c2count[c2]++;
 		c1c2total += 2;
 	}
-#if 0
+#if 1
 
 	/* then sum the counts to find each node's offset into the c1c2 array */
 	count_t c1c2offset = 0;

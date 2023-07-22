@@ -19,7 +19,6 @@ typedef uint16_t nodenum_t;
 typedef uint16_t transnum_t;
 typedef uint16_t count_t;
 
-
 /* list of nodes that need to be recalculated */
 typedef struct {
 	nodenum_t *pNodes;
@@ -38,6 +37,7 @@ public:
 
 	// Some types and simple structures used internally
 
+	// Electrical state of an electrically connected group of nodes
 	enum EGroup {
 		kNothing,
 		kHigh,
@@ -62,6 +62,7 @@ public:
 		nodenum_t other_node;
 	} C1C2;
 
+	// TODO - Get rid of this... no need for an inline for a simple structure create
 	static inline C1C2
 	NewC1C2(transnum_t tn, nodenum_t n)
 	{
@@ -69,7 +70,7 @@ public:
 		return c;
 	}
 
-	// Lifecycle
+	// Lifecycle --------------------------------------------
 
 	NetListSim(){}
 	virtual ~NetListSim(){}
@@ -79,11 +80,17 @@ public:
     void SetupNodesAndTransistors(const std::vector<Transistor>& transdefs, const std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc);
 
     void DestroyNodesAndTransistors();
+
     void SetNode(nodenum_t nn, bool s);
+
     bool IsNodeHigh(nodenum_t nn);
+
     unsigned int ReadNodes(int count, nodenum_t *nodelist);
+
     void WriteNodes(int count, nodenum_t *nodelist, int v);
+
     void RecalcNodeList();
+
     void StabilizeChip();
 
 private:
@@ -110,13 +117,15 @@ private:
 	// Bit array of the actual charge state of a node
 	std::vector<bool> nodeState;
 
-	// 2D matrix of the node gates... need to get the structure of this
-	std::vector<std::vector<nodenum_t>> nodeGates;
+	// How many transistor output gates are driving each node
+	std::vector<count_t> nodeGateCount;
+
+	// 2D matrix of the node gates... lists which transistor gates are driving each node
+	// first index is node number, second index is gate index... value[][] is transistor number
+	std::vector<std::vector<transnum_t>> nodeGates;
 
 	// The two inputs (collector and base) of a transistor
 	std::vector<C1C2> nodeC1C2s;
-
-	std::vector<count_t> nodeGateCount;
 
 	// Offsets in to the C1C2s array
 	std::vector<count_t> nodeC1C2Offset;

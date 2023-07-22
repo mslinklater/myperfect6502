@@ -103,39 +103,37 @@ void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transde
 
 	/* cross reference transistors in nodes data structures */
 	/* start by computing how many c1c2 entries should be created for each node */
-//	count_t *c1c2count = new count_t(numNodes);
 
-	std::vector<count_t> c1c2count;
+	// c1c2count counts how many c1 or c2 nodes are connected to each node
+	std::vector<nodenum_t> c1c2count;
 	c1c2count.resize(numNodes);
 
 	count_t c1c2total = 0;
 
 	for (i = 0; i < numTransistors; i++) 
 	{
-		nodenum_t gate = transistorsGate[i];
-		nodenum_t c1 = transistorsC1[i];
-		nodenum_t c2 = transistorsC2[i];
+		nodenum_t gateNode = transistorsGate[i];	// which node the transistor gate drives
+		nodenum_t c1Node = transistorsC1[i];
+		nodenum_t c2Node = transistorsC2[i];
 
-		nodenum_t gateCount = nodeGateCount[gate];
+		nodenum_t gateCount = nodeGateCount[gateNode];
 
-		assert(gate < numNodes);
+		assert(gateNode < numNodes);
 		assert(gateCount < numNodes);
 
-		nodeGates[gate][gateCount] = i;
-		nodeGateCount[gate]++;
+		nodeGates[gateNode][gateCount] = i;
+		nodeGateCount[gateNode]++;
 
-		assert(c1 < numNodes);
-		assert(c2 < numNodes);
+		assert(c1Node < numNodes);
+		assert(c2Node < numNodes);
 
-		c1c2count[c1]++;
-		c1c2count[c2]++;
+		c1c2count[c1Node]++;
+		c1c2count[c2Node]++;
 		c1c2total += 2;
 	}
-#if 1
 
 	/* then sum the counts to find each node's offset into the c1c2 array */
 	count_t c1c2offset = 0;
-
 	for (i = 0; i < numNodes; i++) 
 	{
 		nodeC1C2Offset[i] = c1c2offset;
@@ -146,11 +144,8 @@ void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transde
 	/* create and fill the nodes_c1c2s array according to these offsets */
 	nodeC1C2s.resize(c1c2total);
 
-//	std::memset(c1c2count, 0, numNodes * sizeof(*c1c2count));
-	for(int i=0 ; i<c1c2count.size() ; ++i)
-	{
-		c1c2count[i] = 0;
-	}
+	// clear c1c2count so we can reuse it
+	for(int i=0 ; i<c1c2count.size() ; ++i)	c1c2count[i] = 0;
 
 	for (i = 0; i < numTransistors; i++) 
 	{
@@ -159,8 +154,6 @@ void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transde
 		nodeC1C2s[nodeC1C2Offset[c1] + c1c2count[c1]++] = NewC1C2(i, c2);
 		nodeC1C2s[nodeC1C2Offset[c2] + c1c2count[c2]++] = NewC1C2(i, c1);
 	}
-
-//	delete c1c2count;
 
 	for (i = 0; i < numNodes; i++) 
 	{
@@ -189,7 +182,6 @@ void NetListSim::SetupNodesAndTransistors(const std::vector<Transistor>& transde
 			}
 		}
 	}
-#endif
 }
 
 void NetListSim::AddNodesDependant(nodenum_t a, nodenum_t b)

@@ -18,7 +18,11 @@ main( int argv, char** argc)
 	NetListSim netListSim;
 	netListSim.SetupNodesAndTransistors(netlist_6502_transdefs, netlist_6502_node_is_pullup, vss, vcc);
 
-	state_t* pState = InitAndResetChip();
+	state_t* pState = InitAndResetChip();	// perfect6502.cpp
+
+	{	// Init and reset the new chip
+
+	}
 
 	/* set up memory for user program */
 	init_monitor(argc[1], address, isBasic);

@@ -1,5 +1,4 @@
 set(SOURCE_FILES ${SOURCE_FILES}
-	${CMAKE_CURRENT_LIST_DIR}/netlist_sim.cpp
 	${CMAKE_CURRENT_LIST_DIR}/netlistsim.cpp
 	${CMAKE_CURRENT_LIST_DIR}/trace.cpp
 	PARENT_SCOPE

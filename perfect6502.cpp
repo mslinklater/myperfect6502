@@ -21,10 +21,10 @@
  */
 
 #include <stdio.h>
-#include "netlistsim/netlist_sim.h"
+#include "netlist_sim.h"
 /* nodes & transistors */
 #include "netlist_6502.h"
-#include "state.h"
+#include "netliststate.h"
 
 /************************************************************
  *
@@ -177,9 +177,6 @@ step(state_t *state)
 state_t *
 InitAndResetChip()
 {
-	/* set up data structures for efficient emulation */
-//	nodenum_t nodes = sizeof(netlist_6502_node_is_pullup)/sizeof(*netlist_6502_node_is_pullup);
-
 	state_t *state = SetupNodesAndTransistors(netlist_6502_transdefs,
 										   netlist_6502_node_is_pullup,
 										   vss,

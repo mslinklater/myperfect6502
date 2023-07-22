@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "state.h"
+#include <cassert>
+#include "netliststate.h"
 #include "algo_lists.h"
 #include "algo_groups.h"
 #include "trace.h"
@@ -230,7 +231,7 @@ RecalcNodeList(state_t *state)
  ************************************************************/
 
 static inline void
-AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)
+AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)	// copied
 {
 	for (count_t g = 0; g < state->nodesDeps[a]; g++)
 	{
@@ -244,7 +245,7 @@ AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)
 }
 
 static inline void
-AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b)
+AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b) // copied
 {
 	for (count_t g = 0; g < state->nodesLeftDeps[a]; g++)
 	{
@@ -258,7 +259,7 @@ AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b)
 }
 
 state_t *
-SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc)
+SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc) // copied
 {
 	/* allocate state */
 //	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
@@ -334,7 +335,7 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 		state->nodeGateCount[i] = 0;
 	}
 
-	/* copy transistors into r/w data structure */
+	/* copy transistors into r/w data structure, skipping any duplicates found */
 	count_t j = 0;
 
 	for (i = 0; i < state->numTransistors; i++) 
@@ -496,6 +497,8 @@ unsigned int
 ReadNodes(state_t *state, int count, nodenum_t *nodelist)
 {
 	TRACE_PUSH("ReadNodes");
+	assert(count <= 32);	// for the int
+
 	int result = 0;
 	for (int i = count - 1; i >= 0; i--) 
 	{
@@ -510,6 +513,8 @@ void
 WriteNodes(state_t *state, int count, nodenum_t *nodelist, int v)
 {
 	TRACE_PUSH("WriteNodes");
+	assert(count <= 32);	// for the int
+
 	for (int i = 0; i < 8; i++, v >>= 1)
 	{
 		SetNode(state, nodelist[i], v & 1);

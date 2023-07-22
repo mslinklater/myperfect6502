@@ -175,7 +175,7 @@ step(state_t *state)
 }
 
 state_t *
-InitAndResetChip()
+InitAndResetChip()	// copied
 {
 	state_t *state = SetupNodesAndTransistors(netlist_6502_transdefs,
 										   netlist_6502_node_is_pullup,

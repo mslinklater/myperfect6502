@@ -20,7 +20,7 @@ ListOutClear(state_t *state)
 }
 
 static inline void
-ListOutAdd(state_t *state, nodenum_t i)
+ListOutAdd(state_t *state, nodenum_t i)	// copied
 {
 	if (!state->listoutBitmap[i]) 
 	{

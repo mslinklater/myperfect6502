@@ -212,35 +212,229 @@ void NetListSim::AddNodesLeftDependant(nodenum_t a, nodenum_t b)
 
 void NetListSim::DestroyNodesAndTransistors()
 {
-
+	assert(false);
 }
 
 void NetListSim::SetNode(nodenum_t nn, bool s)
 {
+	pullupNodes[nn] = s;
+	pulldownNodes[nn] = !s;
 
+	ListOutAdd(nn);
+
+	RecalcNodeList();
 }
 
 bool NetListSim::IsNodeHigh(nodenum_t nn)
 {
-	return false;
+	return nodeState[nn];
 }
 
 unsigned int NetListSim::ReadNodes(int count, nodenum_t *nodelist)
 {
+	assert(false);
 	return 0;
 }
 
 void NetListSim::WriteNodes(int count, nodenum_t *nodelist, int v) 
 {
-
+	assert(false);
 }
 
 void NetListSim::RecalcNodeList() 
 {
+	for(int j=0 ; j < 100 ; j++)	// just need to loop on this for a while until things settle down
+	{
+		ListsSwitch();
 
+		if(listIn.count)
+		{
+			break;
+		}
+
+		ListOutClear();
+
+		for(count_t i=0 ; i<listIn.count ; ++i)
+		{
+			nodenum_t n = listIn.pNodes[i];
+			RecalcNode(n);
+		}
+	}
+	ListOutClear();
 }
 
 void NetListSim::StabilizeChip() 
 {
+	for (count_t i = 0; i < numNodes; i++)
+	{
+		ListOutAdd(i);
+	}
 
+	RecalcNodeList();
+}
+
+void NetListSim::ListOutAdd(nodenum_t i)
+{
+	if(listoutBitmap[i])
+	{
+		listOut.pNodes[ listOut.count++ ] = i;
+		listoutBitmap[i] = true;
+	}
+}
+
+void NetListSim::ListsSwitch()
+{
+	NodeList tmp = listIn;
+	listIn = listOut;
+	listOut = tmp;
+}
+
+void NetListSim::ListOutClear()
+{
+	for(int i=0 ; i<listIn.count ; i++)
+	{
+		listoutBitmap[listIn.pNodes[i]] = false;
+	}
+
+	listOut.count = 0;
+}
+
+void NetListSim::GroupClear()
+{
+	// unwind the set bits - faster than clearing the whole bitmap
+
+	for(int i=0 ; i<groupCount ; i++)
+	{
+		groupBitmap[groupNodes[i]] = false;
+	}
+	groupCount = 0;
+}
+
+void NetListSim::AddNodeToGroup(nodenum_t n)
+{
+	if (n == vss) 
+	{
+		groupContainsValue = EGroup::kVss;
+		return;
+	}
+	
+	if (n == vcc) 
+	{
+		if (groupContainsValue != EGroup::kVss)
+		{
+			groupContainsValue = EGroup::kVcc;
+		}
+		return;
+	}
+
+	// If group already contains this node, return
+	if (groupBitmap[n])	//GroupContains(state, n))
+	{
+		return;
+	}
+
+	GroupAdd(n);
+
+	if (groupContainsValue < EGroup::kPulldown && pulldownNodes[n]) 
+	{
+		groupContainsValue = EGroup::kPulldown;
+	}
+	if (groupContainsValue < EGroup::kPullup && pullupNodes[n]) 
+	{
+		groupContainsValue = EGroup::kPullup;
+	}
+	if (groupContainsValue < EGroup::kHigh && nodeState[n]) 
+	{
+		groupContainsValue = EGroup::kHigh;
+	}
+
+	/* revisit all transistors that control this node */
+	count_t end = nodeC1C2Offset[n+1];
+
+	for (count_t t = nodeC1C2Offset[n]; t < end; t++) 
+	{
+		C1C2 c = nodeC1C2s[t];
+
+		/* if the transistor connects c1 and c2... */
+		if (onTransistors[c.transistor]) 
+		{
+			AddNodeToGroup(c.other_node);
+		}
+	}
+}
+
+void NetListSim::GroupAdd(nodenum_t i)
+{
+	groupNodes[groupCount++] = i;
+
+	groupBitmap[i] = true;
+
+//	if(maxGroupCount < groupCount)
+//	{
+//		maxGroupCount = groupCount;
+//	}
+}
+
+void NetListSim::AddAllNodesToGroup(nodenum_t node)
+{
+	GroupClear();
+
+	groupContainsValue = EGroup::kNothing;
+
+	AddNodeToGroup(node);
+}
+
+bool NetListSim::GetGroupValue()
+{
+	switch (groupContainsValue) 
+	{
+		case EGroup::kVcc:
+		case EGroup::kPullup:
+		case EGroup::kHigh:
+			return true;
+		case EGroup::kVss:
+		case EGroup::kPulldown:
+		case EGroup::kNothing:
+			return false;
+	}
+	return false;
+}
+
+void NetListSim::RecalcNode(nodenum_t node)
+{
+	AddAllNodesToGroup(node);
+
+	bool newVoltage = GetGroupValue();
+
+	for(count_t i=0 ; i<groupCount ; ++i)
+	{
+		nodenum_t nn = groupNodes[i];	//GroupGet(state, i);
+
+		if (nodeState[nn] != newVoltage) 
+		{
+			nodeState[nn] = newVoltage;
+
+			for (count_t t = 0; t < nodeGateCount[nn]; t++) 
+			{
+				transnum_t tn = nodeGates[nn][t];
+				onTransistorsCount[tn]++;
+				onTransistors[tn] = newVoltage;
+			}
+
+			if (newVoltage) 
+			{
+				for (count_t g = 0; g < nodesLeftDeps[nn]; g++) 
+				{
+					ListOutAdd( nodesLeftDependant[nn][g] );
+				}
+			} 
+			else 
+			{
+				for (count_t g = 0; g < nodesDeps[nn]; g++) 
+				{
+					ListOutAdd( nodesDependant[nn][g] );
+				}
+			}
+		}
+	}
 }

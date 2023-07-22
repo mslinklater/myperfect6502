@@ -101,6 +101,16 @@ private:
 
 	void AddNodesLeftDependant(nodenum_t a, nodenum_t b);
 
+	void ListOutAdd(nodenum_t i);
+	void ListsSwitch();
+	void ListOutClear();
+	void RecalcNode(nodenum_t n);
+	void AddAllNodesToGroup(nodenum_t n);
+	void GroupClear();
+	void AddNodeToGroup(nodenum_t n);
+	void GroupAdd(nodenum_t i);
+	bool GetGroupValue();
+
 private:
 	nodenum_t	numNodes;
 	nodenum_t	numTransistors;

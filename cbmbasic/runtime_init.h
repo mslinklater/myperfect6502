@@ -1,1 +1,1 @@
-void init_monitor(char* filename, int address, int isBasic);
+void InitMonitor(char* filename, int address, int isBasic);

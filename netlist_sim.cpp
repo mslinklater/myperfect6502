@@ -212,7 +212,6 @@ RecalcNodeList(state_t *state)
 		 * all transistors controlled by this path, collecting
 		 * all nodes that changed because of it for the next run
 		 */
-//		for (count_t i = 0; i < ListInCount(state); i++) 
 		for (count_t i = 0; i < state->listIn.count; i++) 
 		{
 			nodenum_t n = state->listIn.pNodes[i];	//listin_get(state, i);

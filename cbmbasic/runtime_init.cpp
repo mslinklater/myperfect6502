@@ -17,8 +17,10 @@ unsigned short PC;
 int N, Z, C;
 
 void
-init_monitor(char* filename, int address, int isBasic)
+InitMonitor(char* filename, int address, int isBasic)
 {
+	// Load the ROM
+
 	FILE *f;
 	f = fopen(filename, "r");
 	fseek(f, 0L, SEEK_END);
@@ -27,13 +29,20 @@ init_monitor(char* filename, int address, int isBasic)
 	fread(memory + address, 1, fileSize, f);
 	fclose(f);
 
-	/*
-	 * fill the KERNAL jumptable with JMP $F800;
-	 * we will put code there later that loads
-	 * the CPU state and returns
-	 */
 	if(isBasic)
 	{
+		// CBM BASIC ROM is loaded from 0xa000-0xe4b7 (17591 bytes)
+		// 0xa000-0xbfff 8K BASIC	(8192)
+		// 0xc000-0xcfff FREE RAM	(4096)
+		// 0xd000-0xdfff stuff
+		// 0xe000-0xe4b7 - partial Operating System KERNAL ROM - needed for the startup message,
+		// which is at 0xe460
+
+		/*
+		* fill the KERNAL jumptable with JMP $F800;
+		* we will put code there later that loads
+		* the CPU state and returns
+		*/
 		for (unsigned short addr = 0xFF90; addr < 0xFFF3; addr += 3) {
 			memory[addr+0] = 0x4C;
 			memory[addr+1] = 0x00;
@@ -44,12 +53,13 @@ init_monitor(char* filename, int address, int isBasic)
 		* cbmbasic scribbles over 0x01FE/0x1FF, so we can't start
 		* with a stackpointer of 0 (which seems to be the state
 		* after a RESET), so RESET jumps to 0xF000, which contains
-		* a JSR to the actual start of cbmbasic
+		* a JSR to the actual start of cbmbasic (0xe394 ?)
 		*/
 		memory[0xf000] = 0x20;
 		memory[0xf001] = 0x94;
 		memory[0xf002] = 0xE3;
 		
+		// Set the reset vector to 0xf000
 		memory[0xfffc] = 0x00;
 		memory[0xfffd] = 0xF0;
 

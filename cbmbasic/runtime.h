@@ -1,1 +1,5 @@
-void handle_monitor(state_t*);
+namespace Runtime
+{
+	int kernal_dispatch();
+}
+

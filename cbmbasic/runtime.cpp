@@ -30,6 +30,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <cstdint>
+
 #ifdef _WIN32
 #include <direct.h>  // getcwd, chdir
 #include <windows.h> // GetLocalTime, SetLocalTime
@@ -38,13 +40,15 @@
 #include <sys/time.h>
 #include <unistd.h>
 #endif
+
 #include "stat.h"
 #include "readdir.h"
 #include "plugin.h"
 #include "glue.h"
 #include "console.h"
+#include "runtime.h"
 
-unsigned char RAM[65536];
+unsigned char RAM[65536];	// What's this ? Why is there a 2nd memory bank ?
 
 int
 stack4(unsigned short a, unsigned short b, unsigned short c, unsigned short d) {
@@ -76,32 +80,53 @@ stack4(unsigned short a, unsigned short b, unsigned short c, unsigned short d) {
 0088   E9 D0      SBC #$D0
 008A   60         RTS
 */
-static void
-CHRGET_common(int inc) {
+static void CHRGET_common(int inc) 
+{
 	unsigned short temp16;
-	if (!inc) goto CHRGOT_start;
+
+	if (!inc) 
+		goto CHRGOT_start;
+
 CHRGET_start:
-	RAM[0x7A]++; SETSZ(RAM[0x7A]);
-	if (!Z) goto CHRGOT_start;
-	RAM[0x7B]++; SETSZ(RAM[0x7B]);
+	RAM[0x7A]++; 
+	SETSZ(RAM[0x7A]);
+	if (!Z) 
+		goto CHRGOT_start;
+	RAM[0x7B]++; 
+	SETSZ(RAM[0x7B]);
+
 CHRGOT_start:
-	A = RAM[RAM[0x7A] | RAM[0x7B]<<8]; SETSZ(A);
-	temp16 = ((unsigned short)A) - ((unsigned short)0x3A); SETNC(temp16); SETSZ(temp16&0xFF);
-	if (C) return;
-	temp16 = ((unsigned short)A) - ((unsigned short)0x20); SETNC(temp16); SETSZ(temp16&0xFF);
-	if (Z) goto CHRGET_start;
+	A = RAM[RAM[0x7A] | RAM[0x7B]<<8]; 
+	SETSZ(A);
+	temp16 = ((unsigned short)A) - ((unsigned short)0x3A); 
+	SETNC(temp16); 
+	SETSZ(temp16&0xFF);
+	if (C) 
+		return;
+	temp16 = ((unsigned short)A) - ((unsigned short)0x20); 
+	SETNC(temp16); 
+	SETSZ(temp16&0xFF);
+	if (Z) 
+		goto CHRGET_start;
 	C = 1;
-	temp16 = (unsigned short)A-(unsigned short)0x30-(unsigned short)(1-C); SETV(((A ^ temp16) & 0x80) && ((A ^ 0x30) & 0x80)); A = (unsigned char)temp16; SETSZ(A); SETNC(temp16);
+	temp16 = (unsigned short)A-(unsigned short)0x30-(unsigned short)(1-C); 
+	SETV(((A ^ temp16) & 0x80) && ((A ^ 0x30) & 0x80)); 
+	A = (unsigned char)temp16; 
+	SETSZ(A); 
+	SETNC(temp16);
 	C = 1;
-	temp16 = (unsigned short)A-(unsigned short)0xD0-(unsigned short)(1-C); SETV(((A ^ temp16) & 0x80) && ((A ^ 0xD0) & 0x80)); A = (unsigned char)temp16; SETSZ(A); SETNC(temp16);
+	temp16 = (unsigned short)A-(unsigned short)0xD0-(unsigned short)(1-C); 
+	SETV(((A ^ temp16) & 0x80) && ((A ^ 0xD0) & 0x80)); 
+	A = (unsigned char)temp16; SETSZ(A); SETNC(temp16);
 }
 
-void
-CHRGET() {
+void CHRGET() 
+{
 	CHRGET_common(1);
 }
-void
-CHRGOT() {
+
+void CHRGOT() 
+{
 	CHRGET_common(0);
 }
 
@@ -115,9 +140,10 @@ CHRGOT() {
 #if 0
 #define RAM_BOT 0x0400 /* we could just as well start at 0x0400, as there is no screen RAM */
 #else
-#define RAM_BOT 0x0800
+constexpr uint16_t kBottomOfRam = 0x0800;
 #endif
-#define RAM_TOP 0xA000
+constexpr uint16_t kTopOfRam = 0xa000;
+
 #define KERN_ERR_NONE			0
 #define KERN_ERR_FILE_OPEN			2
 #define KERN_ERR_FILE_NOT_OPEN		3
@@ -146,28 +172,37 @@ int readycount = 0;
 int interactive;
 FILE *input_file;
 
-int
-init_os(int argc, char **argv) {
+int init_os(int argc, char **argv) 
+{
 //	printf("init_os %d\n", argc);
 	if (!argc) /* continuation */
 		return PC;
 
-	if (argc>1) {
+	if (argc>1) 
+	{
 		interactive = 0;
 		input_file = fopen(argv[1], "r");
-		if (!input_file) {
+
+		if (!input_file) 
+		{
 			printf("Error opening: %s\n", argv[1]);
 			exit(1);
 		}
-		if (fgetc(input_file)=='#') {
+		if (fgetc(input_file)=='#') 
+		{
 			char c;
-			do {
+			do 
+			{
 				c = fgetc(input_file);
 			} while((c!=13)&&(c!=10));
-		} else {
+		} 
+		else 
+		{
 			fseek(input_file, 0, SEEK_SET);
 		}
-	} else {
+	} 
+	else 
+	{
 		interactive = 1;
 		input_file = NULL;
 	}
@@ -180,15 +215,15 @@ unsigned short orig_error, orig_main, orig_crnch, orig_qplop, orig_gone, orig_ev
 
 int plugin = 0;
 
-void
-replace_vector(unsigned short address, unsigned short _new, unsigned short *old) {
+void replace_vector(unsigned short address, unsigned short _new, unsigned short *old) 
+{
 	*old = RAM[address] | (RAM[address+1]<<8);
 	RAM[address] = (_new)&0xFF;
 	RAM[address+1] = (_new)>>8;
 }
 
-void
-plugin_on() {
+void plugin_on() 
+{
 	if (plugin)
 		return;
 
@@ -202,8 +237,8 @@ plugin_on() {
 	plugin = 1;
 }
 
-static void
-plugin_off() {
+static void plugin_off() 
+{
 	unsigned short dummy;
 
 	if (!plugin)
@@ -219,22 +254,22 @@ plugin_off() {
 	plugin = 0;
 }
 
-static void
-SETMSG() {
-		kernal_msgflag = A;
-		A = kernal_status;
+static void SETMSG() 
+{
+	kernal_msgflag = A;
+	A = kernal_status;
 }
 
-static void
-MEMTOP() {
+static void MEMTOP() 
+{
 #if DEBUG /* CBMBASIC doesn't do this */
 	if (!C) {
 		printf("UNIMPL: set top of RAM");
 		exit(1);
 	}
 #endif
-	X = RAM_TOP&0xFF;
-	Y = RAM_TOP>>8;
+	X = kTopOfRam & 0xFF;
+	Y = kTopOfRam >> 8;
 
 	/*
 	 * if we want to turn on the plugin
@@ -244,59 +279,67 @@ MEMTOP() {
 }
 
 /* MEMBOT */
-static void
-MEMBOT() {
+static void MEMBOT() 
+{
 #if DEBUG /* CBMBASIC doesn't do this */
 	if (!C) {
 		printf("UNIMPL: set bot of RAM");
 		exit(1);
 	}
 #endif
-	X = RAM_BOT&0xFF;
-	Y = RAM_BOT>>8;
+	X = kBottomOfRam & 0xFF;
+	Y = kBottomOfRam >> 8;
 }
 
 /* READST */
-static void
-READST() {
-		A = kernal_status;
+static void READST() 
+{
+	A = kernal_status;
 }
 
 /* SETLFS */
-static void
-SETLFS() {
-		kernal_lfn = A;
-		kernal_dev = X;
-		kernal_sec = Y;
+static void SETLFS()
+{
+	kernal_lfn = A;
+	kernal_dev = X;
+	kernal_sec = Y;
 }
 
 /* SETNAM */
-static void
-SETNAM() {
-		kernal_filename = X | Y<<8;
-		kernal_filename_len = A;
+static void SETNAM() 
+{
+	kernal_filename = X | Y<<8;
+	kernal_filename_len = A;
 }
 
 /* OPEN */
-static void
-OPEN() {
+static void OPEN() 
+{
     kernal_status = 0;
-    if (kernal_files[kernal_lfn]) {
+    if (kernal_files[kernal_lfn]) 
+	{
         C = 1;
         A = KERN_ERR_FILE_OPEN;
-    } else if (kernal_filename_len == 0) {
+    } 
+	else if (kernal_filename_len == 0) 
+	{
         C = 1;
         A = KERN_ERR_MISSING_FILE_NAME;
-    } else {
+    } 
+	else 
+	{
         unsigned char savedbyte = RAM[kernal_filename+kernal_filename_len];
         const char* mode = kernal_sec == 0 ? "r" : "w";
         RAM[kernal_filename+kernal_filename_len] = 0;
         kernal_files[kernal_lfn] = fopen((char*)(RAM+kernal_filename), mode);
         RAM[kernal_filename+kernal_filename_len] = savedbyte;
-        if (kernal_files[kernal_lfn]) {
+        if (kernal_files[kernal_lfn]) 
+		{
             kernal_files_next[kernal_lfn] = EOF;
             C = 0;
-        } else {
+        } 
+		else 
+		{
             C = 1;
             A = KERN_ERR_FILE_NOT_FOUND;
         }
@@ -304,12 +347,15 @@ OPEN() {
 }
 
 /* CLOSE */
-static void
-CLOSE() {
-    if (!kernal_files[kernal_lfn]) {
+static void CLOSE() 
+{
+    if (!kernal_files[kernal_lfn]) 
+	{
         C = 1;
         A = KERN_ERR_FILE_NOT_OPEN;
-    } else {
+    } 
+	else 
+	{
         fclose(kernal_files[kernal_lfn]);
         kernal_files[kernal_lfn] = 0;
         C = 0;
@@ -317,13 +363,16 @@ CLOSE() {
 }
 
 /* CHKIN */
-static void
-CHKIN() {
+static void CHKIN() 
+{
     kernal_status = 0;
-    if (!kernal_files[X]) {
+    if (!kernal_files[X]) 
+	{
         C = 1;
         A = KERN_ERR_FILE_NOT_OPEN;
-    } else {
+    } 
+	else 
+	{
         // TODO Check read/write mode
         kernal_input = X;
         C = 0;
@@ -331,13 +380,16 @@ CHKIN() {
 }
 
 /* CHKOUT */
-static void
-CHKOUT() {
+static void CHKOUT() 
+{
     kernal_status = 0;
-    if (!kernal_files[X]) {
+    if (!kernal_files[X]) 
+	{
         C = 1;
         A = KERN_ERR_FILE_NOT_OPEN;
-    } else {
+    } 
+	else 
+	{
         // TODO Check read/write mode
         kernal_output = X;
         C = 0;
@@ -345,8 +397,8 @@ CHKOUT() {
 }
 
 /* CLRCHN */
-static void
-CLRCHN() {
+static void CLRCHN() 
+{
     kernal_input = 0;
     kernal_output = 0;
 }
@@ -357,17 +409,22 @@ int fakerun = 0;
 int fakerun_index = 0;
 
 /* CHRIN */
-static void
-CHRIN() {
-	if ((!interactive) && (readycount==2)) {
+static void CHRIN() 
+{
+	if ((!interactive) && (readycount==2)) 
+	{
 		exit(0);
 	}
-	if (kernal_input != 0) {
-		if (feof(kernal_files[kernal_input])) {
+	if (kernal_input != 0) 
+	{
+		if (feof(kernal_files[kernal_input])) 
+		{
 			kernal_status |= KERN_ST_EOF;
 			kernal_status |= KERN_ST_TIME_OUT_READ;
 			A = 13;
-		} else {
+		} 
+		else 
+		{
 			if (kernal_files_next[kernal_input] == EOF)
 				kernal_files_next[kernal_input] = fgetc(kernal_files[kernal_input]);
 			A = kernal_files_next[kernal_input];
@@ -375,17 +432,25 @@ CHRIN() {
 			if (kernal_files_next[kernal_input] == EOF)
 				kernal_status |= KERN_ST_EOF;
 		}
-	} else if (!input_file) {
+	} 
+	else if (!input_file) 
+	{
 		A = getchar(); /* stdin */
 		if (A=='\n') A = '\r';
-	} else {
-		if (fakerun) {
+	} 
+	else 
+	{
+		if (fakerun) 
+		{
 			A = run[fakerun_index++];
 			if (fakerun_index==sizeof(run))
 				input_file = 0; /* switch to stdin */
-		} else {
+		} 
+		else 
+		{
 			A = fgetc(input_file);
-			if ((A==255)&&(readycount==1)) {
+			if ((A==255)&&(readycount==1)) 
+			{
 				fakerun = 1;
 				fakerun_index = 0;
 				A = run[fakerun_index++];
@@ -397,8 +462,8 @@ CHRIN() {
 }
 
 /* CHROUT */
-static void
-CHROUT() {
+static void CHROUT() 
+{
 //return;
 //exit(1);
 #if 0
@@ -408,32 +473,39 @@ int c = *(unsigned short*)(&RAM[0x0100+S+5]) + 1;
 int d = *(unsigned short*)(&RAM[0x0100+S+7]) + 1;
 printf("CHROUT: %d @ %x,%x,%x,%x\n", A, a, b, c, d);
 #endif
-	if (!interactive) {
-		if (stack4(0xe10f,0xab4a,0xab30,0xe430)) {
+	if (!interactive) 
+	{
+		if (stack4(0xe10f,0xab4a,0xab30,0xe430)) 
+		{
 			/* COMMODORE 64 BASIC V2 */
 			C = 0;
 			return;
 		}
-		if (stack4(0xe10f,0xab4a,0xab30,0xe43d)) {
+		if (stack4(0xe10f,0xab4a,0xab30,0xe43d)) 
+		{
 			/* 38911 */
 			C = 0;
 			return;
 		}
-		if (stack4(0xe10f,0xab4a,0xab30,0xe444)) {
+		if (stack4(0xe10f,0xab4a,0xab30,0xe444)) 
+		{
 			/* BASIC BYTES FREE */
 			C = 0;
 			return;
 		}
 	}
-	if (stack4(0xe10f,0xab4a,0xab30,0xa47b)) {
+	if (stack4(0xe10f,0xab4a,0xab30,0xa47b)) 
+	{
 		/* READY */
 		if (A=='R') readycount++;
-		if (!interactive) {
+		if (!interactive) 
+		{
 			C = 0;
 			return;
 		}
 	}
-	if (stack4(0xe10f,0xab4a,0xaadc,0xa486)) {
+	if (stack4(0xe10f,0xab4a,0xaadc,0xa486)) 
+	{
 		/*
 		 * CR after each entered numbered program line:
 		 * The CBM screen editor returns CR when the user
@@ -449,20 +521,29 @@ printf("CHROUT: %d @ %x,%x,%x,%x\n", A, a, b, c, d);
 #if 0
 	printf("CHROUT: %c (%d)\n", A, A);
 #else
-    if (kernal_output) {
-        if (fputc(A, kernal_files[kernal_output]) == EOF) {
+    if (kernal_output) 
+	{
+        if (fputc(A, kernal_files[kernal_output]) == EOF) 
+		{
             C = 1;
             A = KERN_ERR_NOT_OUTPUT_FILE;
-        } else
+        } 
+		else
             C = 0;
-    } else {
-        if (kernal_quote) {
+    } 
+	else 
+	{
+        if (kernal_quote) 
+		{
             if (A == '"' || A == '\n' || A == '\r') kernal_quote = 0;
             putchar(A);
-        } else {
-            switch (A) {
+        } 
+		else 
+		{
+            switch (A) 
+			{
                 case 5:
-                    set_color(COLOR_WHITE);
+                    Console::set_color(Console::COLOR_WHITE);
                     break;
                 case 10:
                     break;
@@ -471,69 +552,69 @@ printf("CHROUT: %d @ %x,%x,%x,%x\n", A, a, b, c, d);
                     putchar(10);
                     break;
                 case 17: /* CSR DOWN */
-                    down_cursor();
+                    Console::down_cursor();
                     break;
                 case 19: /* CSR HOME */
-                    move_cursor(0, 0);
+                    Console::move_cursor(0, 0);
                     break;
                 case 28:
-                    set_color(COLOR_RED);
+                    Console::set_color(Console::COLOR_RED);
                     break;
                 case 29: /* CSR RIGHT */
-                    right_cursor();
+                    Console::right_cursor();
                     break;
                 case 30:
-                    set_color(COLOR_GREEN);
+                    Console::set_color(Console::COLOR_GREEN);
                     break;
                 case 31:
-                    set_color(COLOR_BLUE);
+                    Console::set_color(Console::COLOR_BLUE);
                     break;
                 case 129:
-                    set_color(COLOR_ORANGE);
+                    Console::set_color(Console::COLOR_ORANGE);
                     break;
                 case 144:
-                    set_color(COLOR_BLACK);
+                    Console::set_color(Console::COLOR_BLACK);
                     break;
                 case 145: /* CSR UP */
-                    up_cursor();
+                    Console::up_cursor();
                     break;
                 case 147: /* clear screen */
 #ifndef NO_CLRHOME
-                    clear_screen();
+                    Console::clear_screen();
 #endif
                     break;
                 case 149:
-                    set_color(COLOR_BROWN);
+                    Console::set_color(Console::COLOR_BROWN);
                     break;
                 case 150:
-                    set_color(COLOR_LTRED);
+                    Console::set_color(Console::COLOR_LTRED);
                     break;
                 case 151:
-                    set_color(COLOR_GREY1);
+                    Console::set_color(Console::COLOR_GREY1);
                     break;
                 case 152:
-                    set_color(COLOR_GREY2);
+                    Console::set_color(Console::COLOR_GREY2);
                     break;
                 case 153:
-                    set_color(COLOR_LTGREEN);
+                    Console::set_color(Console::COLOR_LTGREEN);
                     break;
                 case 154:
-                    set_color(COLOR_LTBLUE);
+                    Console::set_color(Console::COLOR_LTBLUE);
                     break;
                 case 155:
-                    set_color(COLOR_GREY3);
+                    Console::set_color(Console::COLOR_GREY3);
                     break;
                 case 156:
-                    set_color(COLOR_PURPLE);
+                    Console::set_color(Console::COLOR_PURPLE);
                     break;
                 case 158:
-                    set_color(COLOR_YELLOW);
+                    Console::set_color(Console::COLOR_YELLOW);
                     break;
                 case 159:
-                    set_color(COLOR_CYAN);
+                    Console::set_color(Console::COLOR_CYAN);
                     break;
                 case 157: /* CSR LEFT */
-                    left_cursor();
+                    Console::left_cursor();
                     break;
                 case '"':
                     kernal_quote = 1;
@@ -549,95 +630,97 @@ printf("CHROUT: %d @ %x,%x,%x,%x\n", A, a, b, c, d);
 }
 
 /* LOAD */
-static void
-LOAD() {
-		FILE *f;
-		struct stat st;
-		unsigned short start;
-		unsigned short end;
-		unsigned char savedbyte;
+static void LOAD() 
+{
+	FILE *f;
+	struct stat st;
+	unsigned short start;
+	unsigned short end;
+	unsigned char savedbyte;
 
-		if (A) {
-			printf("UNIMPL: VERIFY\n");
-			exit(1);
-		}
-		if (!kernal_filename_len)
-			goto missing_file_name;
+	if (A) 
+	{
+		printf("UNIMPL: VERIFY\n");
+		exit(1);
+	}
+	if (!kernal_filename_len)
+		goto missing_file_name;
 
 /* on special filename $ read directory entries and load they in the basic area memory */
-		if( RAM[kernal_filename]=='$' ) {
-			DIR *dirp;
-			struct dirent *dp;
-			int i, file_size;
-			unsigned short old_memp, memp = 0x0801;  // TODO hack!
+	if( RAM[kernal_filename]=='$' ) 
+	{
+		DIR *dirp;
+		struct dirent *dp;
+		int i, file_size;
+		unsigned short old_memp, memp = 0x0801;  // TODO hack!
 
+		old_memp = memp;
+		memp += 2;
+		RAM[memp++] = 0;
+		RAM[memp++] = 0;
+		RAM[memp++] = 0x12; /* REVERS ON */
+		RAM[memp++] = '"';
+		for(i=0; i<16; i++)
+			RAM[memp+i] = ' ';
+		if( (getcwd((char*)&RAM[memp], 256)) == NULL )
+			goto device_not_present;
+		memp += strlen((char*)&RAM[memp]); /* only 16 on COMMODORE DOS */
+		RAM[memp++] = '"';
+		RAM[memp++] = ' ';
+		RAM[memp++] = '0';
+		RAM[memp++] = '0';
+		RAM[memp++] = ' ';
+		RAM[memp++] = '2';
+		RAM[memp++] = 'A';
+		RAM[memp++] = 0;
+
+		RAM[old_memp] = (memp) & 0xFF;
+		RAM[old_memp+1] = (memp) >> 8;
+			
+		if ( !(dirp = opendir(".")) )
+			goto device_not_present;
+		while ((dp = readdir(dirp))) {
+			size_t namlen = strlen(dp->d_name);
+			stat(dp->d_name, &st);
+			file_size = (st.st_size + 253)/254; /* convert file size from num of bytes to num of blocks(254 bytes) */
+			if (file_size>0xFFFF)
+				file_size = 0xFFFF;
 			old_memp = memp;
 			memp += 2;
-			RAM[memp++] = 0;
-			RAM[memp++] = 0;
-			RAM[memp++] = 0x12; /* REVERS ON */
+			RAM[memp++] = file_size & 0xFF;
+			RAM[memp++] = file_size >> 8;
+			if (file_size<1000) {
+				RAM[memp++] = ' ';
+				if (file_size<100) {
+					RAM[memp++] = ' ';
+					if (file_size<10) {
+						RAM[memp++] = ' ';
+					}
+				}
+			}
 			RAM[memp++] = '"';
-			for(i=0; i<16; i++)
-				RAM[memp+i] = ' ';
-			if( (getcwd((char*)&RAM[memp], 256)) == NULL )
-				goto device_not_present;
-			memp += strlen((char*)&RAM[memp]); /* only 16 on COMMODORE DOS */
+			if (namlen>16)
+				namlen=16; /* TODO hack */
+			memcpy(&RAM[memp], dp->d_name, namlen);
+			memp += namlen;
 			RAM[memp++] = '"';
+			for (i=namlen; i<16; i++)
+				RAM[memp++] = ' ';
 			RAM[memp++] = ' ';
-			RAM[memp++] = '0';
-			RAM[memp++] = '0';
+			RAM[memp++] = 'P';
+			RAM[memp++] = 'R';
+			RAM[memp++] = 'G';
 			RAM[memp++] = ' ';
-			RAM[memp++] = '2';
-			RAM[memp++] = 'A';
+			RAM[memp++] = ' ';
 			RAM[memp++] = 0;
 
 			RAM[old_memp] = (memp) & 0xFF;
 			RAM[old_memp+1] = (memp) >> 8;
-			
-			if ( !(dirp = opendir(".")) )
-				goto device_not_present;
-			while ((dp = readdir(dirp))) {
-				size_t namlen = strlen(dp->d_name);
-				stat(dp->d_name, &st);
-				file_size = (st.st_size + 253)/254; /* convert file size from num of bytes to num of blocks(254 bytes) */
-				if (file_size>0xFFFF)
-					file_size = 0xFFFF;
-				old_memp = memp;
-				memp += 2;
-				RAM[memp++] = file_size & 0xFF;
-				RAM[memp++] = file_size >> 8;
-				if (file_size<1000) {
-					RAM[memp++] = ' ';
-					if (file_size<100) {
-						RAM[memp++] = ' ';
-						if (file_size<10) {
-							RAM[memp++] = ' ';
-						}
-					}
-				}
-				RAM[memp++] = '"';
-				if (namlen>16)
-					namlen=16; /* TODO hack */
-				memcpy(&RAM[memp], dp->d_name, namlen);
-				memp += namlen;
-				RAM[memp++] = '"';
-				for (i=namlen; i<16; i++)
-					RAM[memp++] = ' ';
-				RAM[memp++] = ' ';
-				RAM[memp++] = 'P';
-				RAM[memp++] = 'R';
-				RAM[memp++] = 'G';
-				RAM[memp++] = ' ';
-				RAM[memp++] = ' ';
-				RAM[memp++] = 0;
-
-				RAM[old_memp] = (memp) & 0xFF;
-				RAM[old_memp+1] = (memp) >> 8;
-			}
-			RAM[memp] = 0;
-			RAM[memp+1] = 0;
-			(void)closedir(dirp);
-			end = memp + 2;
+		}
+		RAM[memp] = 0;
+		RAM[memp+1] = 0;
+		(void)closedir(dirp);
+		end = memp + 2;
 /*
 for (i=0; i<255; i++) {
 	if (!(i&15))
@@ -645,94 +728,97 @@ for (i=0; i<255; i++) {
 	printf("%02X ", RAM[0x0800+i]);
 }
 */
-			goto load_noerr;
-		} /* end if( RAM[kernal_filename]=='$' ) */
+		goto load_noerr;
+	} /* end if( RAM[kernal_filename]=='$' ) */
 
-		savedbyte = RAM[kernal_filename+kernal_filename_len]; /* TODO possible overflow */
-		RAM[kernal_filename+kernal_filename_len] = 0;
+	savedbyte = RAM[kernal_filename+kernal_filename_len]; /* TODO possible overflow */
+	RAM[kernal_filename+kernal_filename_len] = 0;
 
 /* on directory filename chdir on it */
-		if( (stat((char*)&RAM[kernal_filename], &st)) == -1 )
-			goto file_not_found;
-		if(S_ISDIR(st.st_mode)) {
-			if( (chdir((char*)&RAM[kernal_filename])) == -1 )
-				goto device_not_present;
+	if( (stat((char*)&RAM[kernal_filename], &st)) == -1 )
+		goto file_not_found;
+	if(S_ISDIR(st.st_mode)) {
+		if( (chdir((char*)&RAM[kernal_filename])) == -1 )
+			goto device_not_present;
 
-			RAM[0x0801] = RAM[0x0802] = 0;
-			end = 0x0803;
-			goto load_noerr;
-		}
+		RAM[0x0801] = RAM[0x0802] = 0;
+		end = 0x0803;
+		goto load_noerr;
+	}
 
 /* on file load it read it and load in the basic area memory */
-		f = fopen((char*)&RAM[kernal_filename], "rb");
-		if (!f)
-			goto file_not_found;
-		start = ((unsigned char)fgetc(f)) | ((unsigned char)fgetc(f))<<8;
-		if (!kernal_sec)
-			start = X | Y<<8;
-		end = start + fread(&RAM[start], 1, 65536-start, f); /* TODO may overwrite ROM */
-		printf("LOADING FROM $%04X to $%04X\n", start, end);
-		fclose(f);
+	f = fopen((char*)&RAM[kernal_filename], "rb");
+	if (!f)
+		goto file_not_found;
+	start = ((unsigned char)fgetc(f)) | ((unsigned char)fgetc(f))<<8;
+	if (!kernal_sec)
+		start = X | Y<<8;
+	end = start + fread(&RAM[start], 1, 65536-start, f); /* TODO may overwrite ROM */
+	printf("LOADING FROM $%04X to $%04X\n", start, end);
+	fclose(f);
 
 load_noerr:
-		X = end & 0xFF;
-		Y = end >> 8;
-		C = 0;
-		A = KERN_ERR_NONE;
-		return;
+	X = end & 0xFF;
+	Y = end >> 8;
+	C = 0;
+	A = KERN_ERR_NONE;
+	return;
 file_not_found:
-		C = 1;
-		A = KERN_ERR_FILE_NOT_FOUND;
-		return;
+	C = 1;
+	A = KERN_ERR_FILE_NOT_FOUND;
+	return;
 device_not_present:
-		C = 1;
-		A = KERN_ERR_DEVICE_NOT_PRESENT;
-		return;
+	C = 1;
+	A = KERN_ERR_DEVICE_NOT_PRESENT;
+	return;
 missing_file_name:
-		C = 1;
-		A = KERN_ERR_MISSING_FILE_NAME;
-		return;
+	C = 1;
+	A = KERN_ERR_MISSING_FILE_NAME;
+	return;
 }
 
 /* SAVE */
-static void
-SAVE() {
-		FILE *f;
-		unsigned char savedbyte;
-		unsigned short start;
-		unsigned short end;
+static void SAVE() 
+{
+	FILE *f;
+	unsigned char savedbyte;
+	unsigned short start;
+	unsigned short end;
 
-		start = RAM[A] | RAM[A+1]<<8;
-		end = X | Y << 8;
-		if (end<start) {
-			C = 1;
-			A = KERN_ERR_NONE;
-			return;
-		}
-		if (!kernal_filename_len) {
-			C = 1;
-			A = KERN_ERR_MISSING_FILE_NAME;
-			return;
-		}
-		savedbyte = RAM[kernal_filename+kernal_filename_len]; /* TODO possible overflow */
-		RAM[kernal_filename+kernal_filename_len] = 0;
-		f = fopen((char*)&RAM[kernal_filename], "wb"); /* overwrite - these are not the COMMODORE DOS semantics! */
-		if (!f) {
-			C = 1;
-			A = KERN_ERR_FILE_NOT_FOUND;
-			return;
-		}
-		fputc(start & 0xFF, f);
-		fputc(start >> 8, f);
-		fwrite(&RAM[start], end-start, 1, f);
-		fclose(f);
-		C = 0;
+	start = RAM[A] | RAM[A+1]<<8;
+	end = X | Y << 8;
+	if (end<start) 
+	{
+		C = 1;
 		A = KERN_ERR_NONE;
+		return;
+	}
+	if (!kernal_filename_len) 
+	{
+		C = 1;
+		A = KERN_ERR_MISSING_FILE_NAME;
+		return;
+	}
+	savedbyte = RAM[kernal_filename+kernal_filename_len]; /* TODO possible overflow */
+	RAM[kernal_filename+kernal_filename_len] = 0;
+	f = fopen((char*)&RAM[kernal_filename], "wb"); /* overwrite - these are not the COMMODORE DOS semantics! */
+	if (!f) 
+	{
+		C = 1;
+		A = KERN_ERR_FILE_NOT_FOUND;
+		return;
+	}
+	fputc(start & 0xFF, f);
+	fputc(start >> 8, f);
+	fwrite(&RAM[start], end-start, 1, f);
+	fclose(f);
+	C = 0;
+	A = KERN_ERR_NONE;
 }
 
 /* SETTIM */
-static void
-SETTIM() {
+static void SETTIM() 
+{
     unsigned long   jiffies = Y*65536 + X*256 + A;
     unsigned long   seconds = jiffies/60;
 #ifdef _WIN32
@@ -763,8 +849,8 @@ SETTIM() {
 }
 
 /* RDTIM */
-static void
-RDTIM() {
+static void RDTIM() 
+{
 	unsigned long   jiffies;
 #ifdef _WIN32
 	SYSTEMTIME st;
@@ -788,20 +874,24 @@ RDTIM() {
 }
 
 /* STOP */
-static void
-STOP() {
-		SETZ(0); /* TODO we don't support the STOP key */
+static void STOP() 
+{
+	SETZ(0); /* TODO we don't support the STOP key */
 }
 
 /* GETIN */
-static void
-GETIN() {
-    if (kernal_input != 0) {
-        if (feof(kernal_files[kernal_input])) {
+static void GETIN() 
+{
+    if (kernal_input != 0) 
+	{
+        if (feof(kernal_files[kernal_input])) 
+		{
             kernal_status |= KERN_ST_EOF;
             kernal_status |= KERN_ST_TIME_OUT_READ;
             A = 199;
-        } else {
+        } 
+		else 
+		{
             if (kernal_files_next[kernal_input] == EOF)
                 kernal_files_next[kernal_input] = fgetc(kernal_files[kernal_input]);
             A = kernal_files_next[kernal_input];
@@ -810,14 +900,16 @@ GETIN() {
                 kernal_status |= KERN_ST_EOF;
         }
         C = 0;
-    } else {
+    } 
+	else 
+	{
 #ifdef _WIN32
         if (_kbhit())
             A = _getch();
         else
             A = 0;
 #else
-        A = getchar();
+    	A = getchar();
 #endif
         if (A=='\n') A = '\r';
         C = 0;
@@ -825,11 +917,13 @@ GETIN() {
 }
 
 /* CLALL */
-static void
-CLALL() {
+static void CLALL() 
+{
     int i;
-    for (i = 0; i < sizeof(kernal_files)/sizeof(kernal_files[0]); ++i) {
-        if (kernal_files[i]) {
+    for (i = 0; i < sizeof(kernal_files)/sizeof(kernal_files[0]); ++i) 
+	{
+        if (kernal_files[i]) 
+		{
             fclose(kernal_files[i]);
             kernal_files[i] = 0;
         }
@@ -837,14 +931,17 @@ CLALL() {
 }
 
 /* PLOT */
-static void
-PLOT() {
-    if (C) {
+static void PLOT() 
+{
+    if (C) 
+	{
         int CX, CY;
-        get_cursor(&CX, &CY);
+        Console::get_cursor(&CX, &CY);
         Y = CX;
         X = CY;
-    } else {
+    } 
+	else 
+	{
         printf("UNIMPL: set cursor %d %d\n", Y, X);
         exit(1);
     }
@@ -852,31 +949,32 @@ PLOT() {
 
 
 /* IOBASE */
-static void
-IOBASE() {
+static void IOBASE() 
+{
 #define CIA 0xDC00 /* we could put this anywhere... */
-		/*
-		 * IOBASE is just used inside RND to get a timer value.
-		 * So, let's fake this here, too.
-		 * Commodore BASIC reads offsets 4/5 and 6/7 to get the
-		 * two timers of the CIA.
-		 */
-		int pseudo_timer;
-		pseudo_timer = rand();
-		RAM[CIA+4] = pseudo_timer&0xff;
-		RAM[CIA+5] = pseudo_timer>>8;
-		pseudo_timer = rand(); /* more entropy! */
-		RAM[CIA+8] = pseudo_timer&0xff;
-		RAM[CIA+9] = pseudo_timer>>8;
-		X = CIA & 0xFF;
-		Y = CIA >> 8;
+	/*
+		* IOBASE is just used inside RND to get a timer value.
+		* So, let's fake this here, too.
+		* Commodore BASIC reads offsets 4/5 and 6/7 to get the
+		* two timers of the CIA.
+		*/
+	int pseudo_timer;
+	pseudo_timer = rand();
+	RAM[CIA+4] = pseudo_timer&0xff;
+	RAM[CIA+5] = pseudo_timer>>8;
+	pseudo_timer = rand(); /* more entropy! */
+	RAM[CIA+8] = pseudo_timer&0xff;
+	RAM[CIA+9] = pseudo_timer>>8;
+	X = CIA & 0xFF;
+	Y = CIA >> 8;
 }
 
-int
-kernal_dispatch() {
+int Runtime::kernal_dispatch() 
+{
 //{ printf("kernal_dispatch $%04X; ", PC); int i; printf("stack (%02X): ", S); for (i=S+1; i<0x100; i++) { printf("%02X ", RAM[0x0100+i]); } printf("\n"); }
 	unsigned int new_pc;
-	switch(PC) {
+	switch(PC) 
+	{
 		case 0x0073:	CHRGET();	break;
 		case 0x0079:	CHRGOT();	break;
 		case 0xFF90:	SETMSG();	break;

@@ -3,6 +3,8 @@
 
 #include <sys/types.h>
 
+// This is only really needed on Windows. You can even exclude it from CMakeFiles.txt and Unix will still build fine.
+
 #ifdef _WIN32
 
 #ifndef MAX_PATH

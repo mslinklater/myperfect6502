@@ -5,5 +5,6 @@ set(SOURCE_FILES ${SOURCE_FILES}
 	${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime_init.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime.cpp
+	${CMAKE_CURRENT_LIST_DIR}/readdir.c
 	PARENT_SCOPE
 )

@@ -1,5 +1,6 @@
 #include <stdio.h>
-
+#include "runtime.h"
+#include "runtime_init.h"
 #include "../perfect6502.h"
 /* XXX hook up memory[] with RAM[] in runtime.c */
  
@@ -9,7 +10,6 @@
  *
  ************************************************************/
 
-extern int kernal_dispatch();
 
 /* imported by runtime.c */
 unsigned char A, X, Y, S, P;
@@ -17,7 +17,7 @@ unsigned short PC;
 int N, Z, C;
 
 void
-InitMonitor(char* filename, int address, int isBasic)
+Runtime::InitMonitor(char* filename, int address, int isBasic)
 {
 	// Load the ROM
 
@@ -66,8 +66,12 @@ InitMonitor(char* filename, int address, int isBasic)
 }
 
 void
-handle_monitor(state_t *state)
+Runtime::HandleMonitor(state_t *state)
 {
+//	unsigned char A, X, Y, S, P;
+//	unsigned short PC;
+//	int N, Z, C;
+
 	PC = readPC(state);
 
 	if (PC >= 0xFF90 && ((PC - 0xFF90) % 3 == 0)) {

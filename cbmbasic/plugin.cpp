@@ -54,25 +54,27 @@
 #include "glue.h"
 #include "console.h"
 
-static unsigned short
-get_chrptr() {
+static unsigned short get_chrptr() 
+{
 	return RAM[0x7A] | RAM[0x7B]<<8;
 }
 
-static void
-set_chrptr(unsigned short a) {
+static void set_chrptr(unsigned short a) 
+{
 	RAM[0x7A] = a & 0xFF;
 	RAM[0x7B] = a >> 8;
 }
 
-int
-compare(const char *s1) {
+int compare(const char *s1) 
+{
 	const unsigned char *s = (const unsigned char *)s1;
 	unsigned short chrptr = get_chrptr();
 
-	while (*s) {
+	while (*s) 
+	{
 		CHRGET();
-		if (A != *s++) {
+		if (A != *s++) 
+		{
 			set_chrptr(chrptr);
 			return 0;
 		}
@@ -90,38 +92,45 @@ compare(const char *s1) {
  * the main function will quit, so we end up here again.
  */
 static void
-call(unsigned short pc) {
+call(unsigned short pc) 
+{
 	PC = pc;
 	PUSH_WORD(MAGIC_CONTINUATION-1);
 	main(0,0);
 }
 
 static void
-check_comma() {
+check_comma() 
+{
 	call(0xAEFD);
 }
 
 static unsigned short
-get_word() {
+get_word() 
+{
 	call(0xAD8A);
 	call(0xB7F7);
 	return RAM[0x14] | (RAM[0x15]<<8);
 }
 
 static unsigned char
-get_byte() {
+get_byte() 
+{
 	call(0xB79E);
 	return X;
 }
 
 static void
-get_string(char *s) {
+get_string(char *s) 
+{
 	int i;
 
 	call(0xAD9E);
 	call(0xB6A3);
 	for (i = 0; i < A; i++)
+	{
 		s[i] = RAM[(X|(Y<<8))+i];
+	}
 	s[A] = 0;
 }
 
@@ -156,8 +165,8 @@ get_string(char *s) {
 #define ERROR_LOAD			0x1D
 #define ERROR_BREAK			0x1E
 
-static unsigned short
-error(unsigned char index) {
+static unsigned short error(unsigned char index) 
+{
 	X = index;
 	return 0xA437; /* error handler */
 }
@@ -168,8 +177,8 @@ error(unsigned char index) {
  * We could add handling of extra error codes here, or
  * print friendlier strings, or implement "ON ERROR GOTO".
  */
-unsigned short
-plugin_error() {
+unsigned short plugin_error() 
+{
 	return 0;
 }
 
@@ -178,24 +187,24 @@ plugin_error() {
  *
  * This gets called whenever we are in direct mode.
  */
-unsigned short
-plugin_main() {
+unsigned short plugin_main() 
+{
 	return 0;
 }
 
 /*
  * Tokenize BASIC Text
  */
-unsigned short
-plugin_crnch() {
+unsigned short plugin_crnch() 
+{
 	return 0;
 }
 
 /*
  * BASIC Text LIST
  */
-unsigned short
-plugin_qplop() {
+unsigned short plugin_qplop() 
+{
 	return 0;
 }
 
@@ -204,10 +213,12 @@ plugin_qplop() {
  *
  * This is used for interpreting statements.
  */
-unsigned short
-plugin_gone() {
+unsigned short plugin_gone() 
+{
 	set_chrptr(get_chrptr()+1);
-	for (;;) {
+
+	for (;;) 
+	{
 		unsigned short chrptr;
 		set_chrptr(get_chrptr()-1);
 		chrptr = get_chrptr();
@@ -218,15 +229,18 @@ plugin_gone() {
 		 * - how to check for a comma delimiter
 		 * - how to do error handling
 		 */
-		if (compare("LOCATE")) {
+		if (compare("LOCATE")) 
+		{
 			unsigned char x,y;
 			y = get_byte(); /* 'line' first */
 			check_comma();
 			x = get_byte(); /* then 'column' */
 			/* XXX ignores terminal size */
 			if (x>80 || y>25 || x==0 || y==0)
+			{
 				return error(ERROR_ILLEGAL_QUANTITY);
-			move_cursor(x, y);
+			}
+			Console::move_cursor(x, y);
 
 			continue;
 		}
@@ -237,16 +251,20 @@ plugin_gone() {
 		 *   original interpreter if we don't want
 		 *   to handle it
 		 */
-		if (compare("\222")) { /* 0x92 - WAIT */
+		if (compare("\222")) 
+		{ /* 0x92 - WAIT */
 			unsigned short a;
 			unsigned char b;
 			a = get_word();
 			check_comma();
 			b = get_byte();
-			if (a==6502) {
+			if (a==6502) 
+			{
 				printf("MICROSOFT!");
 				continue;
-			} else {
+			} 
+			else 
+			{
 				set_chrptr(chrptr);
 				return 0;
 			}
@@ -258,7 +276,8 @@ plugin_gone() {
 		 *   existing keywords
 		 * - how to parse a string
 		 */
-		if (compare("\236TEM")) {
+		if (compare("\236TEM")) 
+		{
 			char s[256];
 
 			get_string(s);
@@ -267,7 +286,8 @@ plugin_gone() {
 			continue;
 		}
 
-		if (compare("QUIT")) {
+		if (compare("QUIT")) 
+		{
 			exit(0);
 		}
 		break;
@@ -282,6 +302,7 @@ plugin_gone() {
  * New functions and operators go here.
  */
 unsigned short
-plugin_eval() {
+plugin_eval() 
+{
 	return 0;
 }

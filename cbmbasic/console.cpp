@@ -19,7 +19,7 @@ static int get_console_info(HANDLE *h, COORD *pos, DWORD *size) {
 }
 #endif /* _WIN32 */
 
-void clear_screen() {
+void Console::clear_screen() {
 #ifdef _WIN32
   static COORD upper_left = {0, 0};
   COORD dummy1;
@@ -36,7 +36,7 @@ void clear_screen() {
 #endif /* _WIN32 */
 }
 
-void up_cursor() {
+void Console::up_cursor() {
 #ifdef _WIN32
   COORD pos;
   DWORD dummy;
@@ -52,7 +52,7 @@ void up_cursor() {
 #endif /* _WIN32 */
 }
 
-void down_cursor() {
+void Console::down_cursor() {
 #ifdef _WIN32
   COORD pos;
   DWORD dummy;
@@ -68,7 +68,7 @@ void down_cursor() {
 #endif /* _WIN32 */
 }
 
-void left_cursor() {
+void Console::left_cursor() {
 #ifdef _WIN32
   COORD pos;
   DWORD dummy;
@@ -84,7 +84,7 @@ void left_cursor() {
 #endif /* _WIN32 */
 }
 
-void right_cursor() {
+void Console::right_cursor() {
 #ifdef _WIN32
   COORD pos;
   DWORD dummy;
@@ -100,7 +100,7 @@ void right_cursor() {
 #endif /* _WIN32 */
 }
 
-void move_cursor(int x, int y) {
+void Console::move_cursor(int x, int y) {
 #ifdef _WIN32
   COORD dummy1;
   DWORD dummy2;
@@ -116,7 +116,7 @@ void move_cursor(int x, int y) {
 #endif /* _WIN32 */
 }
 
-void get_cursor(int* x, int* y)
+void Console::get_cursor(int* x, int* y)
 {
 #ifdef _WIN32
   COORD pos;
@@ -140,7 +140,7 @@ void get_cursor(int* x, int* y)
 #endif /* _WIN32 */
 }
 
-void set_color(int c)
+void Console::set_color(int c)
 {
 #ifdef _WIN32
     HANDLE h;

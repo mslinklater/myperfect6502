@@ -1,5 +1,5 @@
 #include "../perfect6502.h"
-#include "runtime.h"
+//#include "runtime.h"
 #include "runtime_init.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -44,7 +44,7 @@ main( int argv, char** argc)
 	}
 
 	/* set up memory for user program */
-	InitMonitor(strRom, address, isBasic);
+	Runtime::InitMonitor(strRom, address, isBasic);
 
 	static int i;
 
@@ -55,7 +55,7 @@ main( int argv, char** argc)
 		clk = !clk;
 		if (clk)
 		{
-			handle_monitor(pState);
+			Runtime::HandleMonitor(pState);
 		}
 //		chipStatus(pState);
 

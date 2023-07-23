@@ -25,7 +25,20 @@
 /* nodes & transistors */
 #include "netlist_6502.h"
 #include "netliststate.h"
+#include "perfect6502.h"
 
+Perfect6502::Perfect6502()
+{
+
+}
+
+Perfect6502::~Perfect6502()
+{
+
+}
+
+
+//------------------------------------------------------------------------------------------------------
 /************************************************************
  *
  * 6502-specific Interfacing

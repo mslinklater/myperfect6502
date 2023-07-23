@@ -62,7 +62,6 @@ InitMonitor(char* filename, int address, int isBasic)
 		// Set the reset vector to 0xf000
 		memory[0xfffc] = 0x00;
 		memory[0xfffd] = 0xF0;
-
 	}
 }
 

@@ -1,12 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstdint>
 
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-
-typedef uint8_t BOOL;
-#define YES 1
-#define NO 0
+extern uint8_t memory[65536];
 
 typedef uint8_t step_t;
 
@@ -16,15 +12,17 @@ static uint16_t PC;
 static uint8_t A, X, Y, S, P;
 static uint8_t temp_lo, temp_hi;
 
-#define TEMP16 (temp_lo | temp_hi << 8)
+static uint16_t TEMP16()
+{
+	return (temp_lo | temp_hi << 8);
+}
 
 static uint16_t AB;
 static uint8_t DB;
 static bool RW;
-extern uint8_t memory[65536];
 
-#define RW_WRITE 0
-#define RW_READ 1
+constexpr bool RW_WRITE = false;
+constexpr bool RW_READ = true;
 
 uint8_t
 LOAD(uint16_t a)
@@ -107,7 +105,7 @@ void
 EOI_INCPC_READADDR()
 {
 	EOI_INCPC();
-	AB = TEMP16;
+	AB = TEMP16();
 	RW = RW_READ;
 }
 
@@ -115,7 +113,7 @@ void
 EOI_INCPC_WRITEADDR()
 {
 	EOI_INCPC();
-	AB = TEMP16;
+	AB = TEMP16();
 	RW = RW_WRITE;
 }
 
@@ -146,13 +144,13 @@ plp()
 	} else if (IS_T3) {
 		temp_lo = S;
 		temp_hi = 0x01;
-		AB = TEMP16;
+		AB = TEMP16();
 		RW = RW_READ;
 		S++;
 		EOI();
 	} else if (IS_T4) {
 		temp_lo = S;
-		AB = TEMP16;
+		AB = TEMP16();
 		RW = RW_READ;
 		EOI();
 	} else if (IS_T5) {
@@ -232,7 +230,7 @@ sta_abs()
 	}
 }
 
-static int cycle = 0;
+static int emuCycle = 0;
 
 void
 emulate_step()
@@ -269,7 +267,7 @@ emulate_step()
 	}
 
 	printf("\ncycle:%d phi0:1 AB:%04X D:%02X RnW:%d PC:%04X A:%02X X:%02X Y:%02X SP:%02X P:%02X IR:%02X",
-			cycle,
+			emuCycle,
 			AB,
 	        DB,
 	        RW,
@@ -303,10 +301,10 @@ emu_measure_instruction()
 {
 
 	for (;;) {
-		printf("cycle %d: ", cycle);
+		printf("cycle %d: ", emuCycle);
 		emulate_step();
 		printf("\n");
-		cycle++;
+		emuCycle++;
 	}
 	return 0;
 }

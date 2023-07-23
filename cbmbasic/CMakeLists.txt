@@ -1,7 +1,7 @@
 set(SOURCE_FILES ${SOURCE_FILES}
 	${CMAKE_CURRENT_LIST_DIR}/cbmbasic.cpp
 	${CMAKE_CURRENT_LIST_DIR}/console.cpp
-	${CMAKE_CURRENT_LIST_DIR}/emu.cpp
+#	${CMAKE_CURRENT_LIST_DIR}/emu.cpp
 	${CMAKE_CURRENT_LIST_DIR}/plugin.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime_init.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime.cpp

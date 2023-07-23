@@ -471,12 +471,15 @@ void
 SetNode(state_t *state, nodenum_t nodeNum, bool s)
 {
 	TRACE_PUSH("SetNode");
-	state->pullupNodes[nodeNum] = s;
-	state->pulldownNodes[nodeNum] = !s;
+//	if(s != state->pullupNodes[nodeNum])	// possible optimisation ? Or a fix... taken from https://github.com/hoglet67/perfect6502/commit/aed0d9a3c37cebb48956c7ab9a3dc4ec11e8d862
+	{
+		state->pullupNodes[nodeNum] = s;
+		state->pulldownNodes[nodeNum] = !s;
 
-	ListOutAdd(state, nodeNum);
+		ListOutAdd(state, nodeNum);
 
-	RecalcNodeList(state);
+		RecalcNodeList(state);
+	}
 	TRACE_POP();
 }
 

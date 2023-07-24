@@ -27,11 +27,11 @@ public:
 	nodenum_t vcc;
 
 	/* everything that describes a node */
-	std::vector<bool> pullupNodes;
-	std::vector<bool> pulldownNodes;
-	std::vector<bool> nodeState;
+	std::vector<bool> pullupNodes;		// checked
+	std::vector<bool> pulldownNodes;	// checked
+	std::vector<bool> nodeState;		// checked
 
-	std::vector<std::vector<nodenum_t>> nodeGates;
+	std::vector<std::vector<nodenum_t>> nodeGates;	// checked
 
 	std::vector<C1C2> nodeC1C2s;
 
@@ -40,18 +40,18 @@ public:
 	// Offsets in to the C1C2s array
 	std::vector<count_t> nodeC1C2Offset;
 
-	std::vector<nodenum_t> nodesDeps;
-	std::vector<nodenum_t> nodesLeftDeps;
+	std::vector<nodenum_t> nodesDeps;	// checked
+	std::vector<nodenum_t> nodesLeftDeps;	// checked
 
-	std::vector<std::vector<nodenum_t>> nodesDependant;
-	std::vector<std::vector<nodenum_t>> nodesLeftDependant;
+	std::vector<std::vector<nodenum_t>> nodesDependant;		// checked
+	std::vector<std::vector<nodenum_t>> nodesLeftDependant;	// checked
 
 	/* everything that describes a transistor */
-	std::vector<nodenum_t> transistorsGate;
-	std::vector<nodenum_t> transistorsC1;
-	std::vector<nodenum_t> transistorsC2;
+	std::vector<nodenum_t> transistorsGate;	// checked
+	std::vector<nodenum_t> transistorsC1;	// checked
+	std::vector<nodenum_t> transistorsC2;	// checked
 
-	std::vector<bool> onTransistors;
+	std::vector<bool> onTransistors;	// checked
 	std::vector<int> onTransistorsCount;
 
 	/* the nodes we are working with */

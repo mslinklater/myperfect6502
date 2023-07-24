@@ -35,8 +35,7 @@ NewC1C2(transnum_t tn, nodenum_t n)
  *
  ************************************************************/
 
-static inline void
-AddNodeToGroup(state_t *state, nodenum_t n)
+static inline void AddNodeToGroup(state_t *state, nodenum_t n)
 {
 	TRACE_PUSH("AddNodeToGroup");
 	/*
@@ -100,8 +99,7 @@ AddNodeToGroup(state_t *state, nodenum_t n)
 	TRACE_POP();
 }
 
-static inline void
-AddAllNodesToGroup(state_t *state, nodenum_t node)
+static inline void AddAllNodesToGroup(state_t *state, nodenum_t node)
 {
 	TRACE_PUSH("AddAllNodesToGroup");
 	GroupClear(state);
@@ -112,8 +110,7 @@ AddAllNodesToGroup(state_t *state, nodenum_t node)
 	TRACE_POP();
 }
 
-static inline bool
-GetGroupValue(state_t *state)
+static inline bool GetGroupValue(state_t *state)
 {
 	switch (state->groupContainsValue) 
 	{
@@ -129,8 +126,7 @@ GetGroupValue(state_t *state)
 	return false;
 }
 
-static inline void
-RecalcNode(state_t *state, nodenum_t node)
+static inline void RecalcNode(state_t *state, nodenum_t node)
 {
 	TRACE_PUSH("RecalcNode");
 	/*
@@ -182,8 +178,7 @@ RecalcNode(state_t *state, nodenum_t node)
 	TRACE_POP();
 }
 
-void
-RecalcNodeList(state_t *state)
+void RecalcNodeList(state_t *state)
 {
 	TRACE_PUSH("RecalcNodeList");
 
@@ -229,8 +224,7 @@ RecalcNodeList(state_t *state)
  *
  ************************************************************/
 
-static inline void
-AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)	// copied
+static inline void AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)	// copied
 {
 	for (count_t g = 0; g < state->nodesDeps[a]; g++)
 	{
@@ -243,8 +237,7 @@ AddNodesDependant(state_t *state, nodenum_t a, nodenum_t b)	// copied
 	state->nodesDependant[a][state->nodesDeps[a]++] = b;
 }
 
-static inline void
-AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b) // copied
+static inline void AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b) // copied
 {
 	for (count_t g = 0; g < state->nodesLeftDeps[a]; g++)
 	{
@@ -257,8 +250,7 @@ AddNodesLeftDependant(state_t *state, nodenum_t a, nodenum_t b) // copied
 	state->nodesLeftDependant[a][state->nodesLeftDeps[a]++] = b;
 }
 
-state_t *
-SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc) // copied
+state_t* SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& node_is_pullup, nodenum_t vss, nodenum_t vcc) // copied
 {
 	/* allocate state */
 //	state_t *state = reinterpret_cast<state_t*>(malloc(sizeof(state_t)));
@@ -441,14 +433,12 @@ SetupNodesAndTransistors(std::vector<Transistor>& transdefs, std::vector<bool>& 
 	return state;
 }
 
-void
-DestroyNodesAndTransistors(state_t *state)
+void DestroyNodesAndTransistors(state_t *state)
 {
     delete state;
 }
 
-void
-StabilizeChip(state_t *state)
+void StabilizeChip(state_t *state)
 {
 	TRACE_PUSH("StabilizeChip");
 	// Add every node to the out list... stabilize *everything*
@@ -467,8 +457,61 @@ StabilizeChip(state_t *state)
  *
  ************************************************************/
 
-void
-SetNode(state_t *state, nodenum_t nodeNum, bool s)
+void AddBitArrayToStateString(std::string& str, const std::vector<bool>& array)
+{
+	for(bool node : array)
+	{
+		if (node)
+		{
+			str.append("1");
+		}
+		else
+		{
+			str.append("0");
+		}
+	}
+}
+
+void AddNodeNumArrayToStateString(std::string& str, const std::vector<nodenum_t>& array)
+{
+	for(nodenum_t i : array)
+	{
+		str.append(std::to_string(i));
+	}
+}
+
+std::string GetStateString(state_t *state)
+{
+	std::string ret;
+
+	AddBitArrayToStateString(ret, state->nodeState);
+	AddBitArrayToStateString(ret, state->pullupNodes);
+	AddBitArrayToStateString(ret, state->pulldownNodes);
+	AddBitArrayToStateString(ret, state->onTransistors);
+
+	for(auto outer : state->nodeGates)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+
+	AddNodeNumArrayToStateString(ret, state->nodesDeps);
+	AddNodeNumArrayToStateString(ret, state->nodesLeftDeps);
+
+	for(auto outer : state->nodesDependant)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+	for(auto outer : state->nodesLeftDependant)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+
+	AddNodeNumArrayToStateString(ret, state->transistorsGate);
+	AddNodeNumArrayToStateString(ret, state->transistorsC1);
+	AddNodeNumArrayToStateString(ret, state->transistorsC2);
+	AddNodeNumArrayToStateString(ret, state->groupNodes);
+
+	return ret;
+}
+
+void SetNode(state_t *state, nodenum_t nodeNum, bool s)
 {
 	TRACE_PUSH("SetNode");
 //	if(s != state->pullupNodes[nodeNum])	// possible optimisation ? Or a fix... taken from https://github.com/hoglet67/perfect6502/commit/aed0d9a3c37cebb48956c7ab9a3dc4ec11e8d862
@@ -483,8 +526,7 @@ SetNode(state_t *state, nodenum_t nodeNum, bool s)
 	TRACE_POP();
 }
 
-bool
-IsNodeHigh(state_t *state, nodenum_t nn)
+bool IsNodeHigh(state_t *state, nodenum_t nn)
 {
 	return state->nodeState[nn];
 }
@@ -495,8 +537,7 @@ IsNodeHigh(state_t *state, nodenum_t nn)
  *
  ************************************************************/
 
-unsigned int
-ReadNodes(state_t *state, int count, nodenum_t *nodelist)
+unsigned int ReadNodes(state_t *state, int count, nodenum_t *nodelist)
 {
 	TRACE_PUSH("ReadNodes");
 	assert(count <= 32);	// for the int
@@ -511,8 +552,7 @@ ReadNodes(state_t *state, int count, nodenum_t *nodelist)
 	return result;
 }
 
-void
-WriteNodes(state_t *state, int count, nodenum_t *nodelist, int v)
+void WriteNodes(state_t *state, int count, nodenum_t *nodelist, int v)
 {
 	TRACE_PUSH("WriteNodes");
 	assert(count <= 32);	// for the int

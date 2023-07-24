@@ -26,7 +26,7 @@ Runtime::InitMonitor(char* filename, int address, int isBasic)
 	fseek(f, 0L, SEEK_END);
 	int fileSize = ftell(f);
 	fseek(f, 0L, SEEK_SET);
-	fread(memory + address, 1, fileSize, f);
+	fread(Perfect6502::memory + address, 1, fileSize, f);
 	fclose(f);
 
 	if(isBasic)
@@ -44,9 +44,9 @@ Runtime::InitMonitor(char* filename, int address, int isBasic)
 		* the CPU state and returns
 		*/
 		for (unsigned short addr = 0xFF90; addr < 0xFFF3; addr += 3) {
-			memory[addr+0] = 0x4C;
-			memory[addr+1] = 0x00;
-			memory[addr+2] = 0xF8;
+			Perfect6502::memory[addr+0] = 0x4C;
+			Perfect6502::memory[addr+1] = 0x00;
+			Perfect6502::memory[addr+2] = 0xF8;
 		}
 
 		/*
@@ -55,13 +55,13 @@ Runtime::InitMonitor(char* filename, int address, int isBasic)
 		* after a RESET), so RESET jumps to 0xF000, which contains
 		* a JSR to the actual start of cbmbasic (0xe394 ?)
 		*/
-		memory[0xf000] = 0x20;
-		memory[0xf001] = 0x94;
-		memory[0xf002] = 0xE3;
+		Perfect6502::memory[0xf000] = 0x20;
+		Perfect6502::memory[0xf001] = 0x94;
+		Perfect6502::memory[0xf002] = 0xE3;
 		
 		// Set the reset vector to 0xf000
-		memory[0xfffc] = 0x00;
-		memory[0xfffd] = 0xF0;
+		Perfect6502::memory[0xfffc] = 0x00;
+		Perfect6502::memory[0xfffd] = 0xF0;
 	}
 }
 
@@ -72,15 +72,15 @@ Runtime::HandleMonitor(state_t *state)
 //	unsigned short PC;
 //	int N, Z, C;
 
-	PC = readPC(state);
+	PC = Perfect6502::readPC(state);
 
 	if (PC >= 0xFF90 && ((PC - 0xFF90) % 3 == 0)) {
 		/* get register status out of 6502 */
-		A = readA(state);
-		X = readX(state);
-		Y = readY(state);
-		S = readSP(state);
-		P = readP(state);
+		A = Perfect6502::readA(state);
+		X = Perfect6502::readX(state);
+		Y = Perfect6502::readY(state);
+		S = Perfect6502::readSP(state);
+		P = Perfect6502::readP(state);
 		N = P >> 7;
 		Z = (P >> 1) & 1;
 		C = P & 1;
@@ -96,17 +96,17 @@ Runtime::HandleMonitor(state_t *state)
 		 * put code there that loads the return state of the
 		 * KERNAL function and returns to the caller
 		 */
-		memory[0xf800] = 0xA9; /* LDA #P */
-		memory[0xf801] = P;
-		memory[0xf802] = 0x48; /* PHA    */
-		memory[0xf803] = 0xA9; /* LHA #A */
-		memory[0xf804] = A;
-		memory[0xf805] = 0xA2; /* LDX #X */
-		memory[0xf806] = X;
-		memory[0xf807] = 0xA0; /* LDY #Y */
-		memory[0xf808] = Y;
-		memory[0xf809] = 0x28; /* PLP    */
-		memory[0xf80a] = 0x60; /* RTS    */
+		Perfect6502::memory[0xf800] = 0xA9; /* LDA #P */
+		Perfect6502::memory[0xf801] = P;
+		Perfect6502::memory[0xf802] = 0x48; /* PHA    */
+		Perfect6502::memory[0xf803] = 0xA9; /* LHA #A */
+		Perfect6502::memory[0xf804] = A;
+		Perfect6502::memory[0xf805] = 0xA2; /* LDX #X */
+		Perfect6502::memory[0xf806] = X;
+		Perfect6502::memory[0xf807] = 0xA0; /* LDY #Y */
+		Perfect6502::memory[0xf808] = Y;
+		Perfect6502::memory[0xf809] = 0x28; /* PLP    */
+		Perfect6502::memory[0xf80a] = 0x60; /* RTS    */
 		/*
 		 * XXX we could do RTI instead of PLP/RTS, but RTI seems to be
 		 * XXX broken in the chip dump - after the KERNAL call at 0xFF90,

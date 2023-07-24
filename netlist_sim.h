@@ -19,3 +19,5 @@ void WriteNodes(state_t *state, int count, nodenum_t *nodelist, int v);
 void RecalcNodeList(state_t *state);
 
 void StabilizeChip(state_t *state);
+
+std::string GetStateString(state_t *state);

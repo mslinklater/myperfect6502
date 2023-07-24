@@ -247,7 +247,7 @@ void NetListSim::RecalcNodeList()
 	{
 		ListsSwitch();
 
-		if(listIn.count)
+		if(!listIn.count)
 		{
 			break;
 		}
@@ -275,7 +275,7 @@ void NetListSim::StabilizeChip()
 
 void NetListSim::ListOutAdd(nodenum_t i)
 {
-	if(listoutBitmap[i])
+	if(!listoutBitmap[i])
 	{
 		listOut.pNodes[ listOut.count++ ] = i;
 		listoutBitmap[i] = true;
@@ -437,4 +437,38 @@ void NetListSim::RecalcNode(nodenum_t node)
 			}
 		}
 	}
+}
+
+extern void AddBitArrayToStateString(std::string& str, const std::vector<bool>& array);
+extern void AddNodeNumArrayToStateString(std::string& str, const std::vector<nodenum_t>& array);
+
+std::string NetListSim::GetStateString()
+{
+	std::string ret;
+
+	AddBitArrayToStateString(ret, nodeState);
+	AddBitArrayToStateString(ret, pullupNodes);
+	AddBitArrayToStateString(ret, pulldownNodes);
+	AddBitArrayToStateString(ret, onTransistors);
+
+	for(auto outer : nodeGates)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+
+	AddNodeNumArrayToStateString(ret, nodesDeps);
+	AddNodeNumArrayToStateString(ret, nodesLeftDeps);
+
+	for(auto outer : nodesDependant)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+	for(auto outer : nodesLeftDependant)
+		for(count_t c : outer)
+			ret.append(std::to_string(c));
+
+	AddNodeNumArrayToStateString(ret, transistorsGate);
+	AddNodeNumArrayToStateString(ret, transistorsC1);
+	AddNodeNumArrayToStateString(ret, transistorsC2);
+	AddNodeNumArrayToStateString(ret, groupNodes);
+
+	return ret;
 }

@@ -21,22 +21,13 @@
  */
 
 #include <stdio.h>
+#include <cassert>
 #include "netlist_sim.h"
 /* nodes & transistors */
 #include "netlist_6502.h"
 #include "netliststate.h"
 #include "perfect6502.h"
-
-Perfect6502::Perfect6502()
-{
-
-}
-
-Perfect6502::~Perfect6502()
-{
-
-}
-
+#include "netlistsim.h"
 
 //------------------------------------------------------------------------------------------------------
 /************************************************************
@@ -44,6 +35,11 @@ Perfect6502::~Perfect6502()
  * 6502-specific Interfacing
  *
  ************************************************************/
+
+NetListSim netListSim;
+
+namespace Perfect6502
+{
 
 uint16_t
 readAddressBus(state_t *state)
@@ -154,13 +150,25 @@ mWrite(uint16_t a, uint8_t d)
 	memory[a] = d;
 }
 
-static inline void
-handleMemory(state_t *state)
+static inline void HandleMemory(state_t *state)
 {
+	int bp=0;
+
+	// OLD
 	if (IsNodeHigh(state, rw))
 		writeDataBus(state, mRead(readAddressBus(state)));
 	else
 		mWrite(readAddressBus(state), readDataBus(state));
+	
+	// NEW
+	if(netListSim.IsNodeHigh(rw))
+	{
+		bp++;
+	}
+	else
+	{
+		bp++;
+	}
 }
 
 /************************************************************
@@ -180,9 +188,14 @@ step(state_t *state)
 	SetNode(state, clk0, !clk);
 	RecalcNodeList(state);
 
+	{
+		netListSim.SetNode(clk0, !clk);
+		netListSim.RecalcNodeList();
+	}
+
 	/* handle memory reads and writes */
 	if (!clk)
-		handleMemory(state);
+		HandleMemory(state);
 
 	cycle++;
 }
@@ -195,22 +208,52 @@ InitAndResetChip()	// copied
 										   vss,
 										   vcc);
 
+
 	SetNode(state, res, 0);
 	SetNode(state, clk0, 1);
+	std::string state1 = GetStateString(state);
 	SetNode(state, rdy, 1);
 	SetNode(state, so, 0);
 	SetNode(state, irq, 1);
 	SetNode(state, nmi, 1);
 
+
 	StabilizeChip(state);
+
+
+//	{	// Init and reset the new chip
+		netListSim.SetupNodesAndTransistors(netlist_6502_transdefs, netlist_6502_node_is_pullup, vss, vcc);
+
+		netListSim.SetNode(res, false);
+		netListSim.SetNode(clk0, true);
+		std::string state2 = netListSim.GetStateString();
+		netListSim.SetNode(rdy, true);
+		netListSim.SetNode(so, false);
+		netListSim.SetNode(irq, true);
+		netListSim.SetNode(nmi, true);
+
+
+		netListSim.StabilizeChip();
+//	}
+
+	assert(state1 == state2);
+
+	// check chips are same state
 
 	/* hold RESET for 8 cycles */
 	for (int i = 0; i < 16; i++)
+	{
 		step(state);
+	}
 
 	/* release RESET */
 	SetNode(state, res, 1);
 	RecalcNodeList(state);
+
+	{
+		netListSim.SetNode(res, true);
+		netListSim.RecalcNodeList();
+	}
 
 	cycle = 0;
 
@@ -258,4 +301,6 @@ chipStatus(state_t *state)
 			printf(" W$%04X=$%02X", a, d);
 		printf("\n");
 	}
+}
+
 }

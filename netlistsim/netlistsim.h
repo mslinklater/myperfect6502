@@ -93,6 +93,8 @@ public:
 
     void StabilizeChip();
 
+	std::string GetStateString();
+
 private:
 
 	// Internal methods

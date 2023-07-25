@@ -28,6 +28,7 @@
 #include "netliststate.h"
 #include "perfect6502.h"
 #include "netlistsim.h"
+#include "debug.h"
 
 //------------------------------------------------------------------------------------------------------
 /************************************************************
@@ -207,36 +208,41 @@ InitAndResetChip()	// copied
 										   netlist_6502_node_is_pullup,
 										   vss,
 										   vcc);
-
+	netListSim.SetupNodesAndTransistors(netlist_6502_transdefs, netlist_6502_node_is_pullup, vss, vcc);
 
 	SetNode(state, res, 0);
+	netListSim.SetNode(res, false);
+
 	SetNode(state, clk0, 1);
-	std::string state1 = GetStateString(state);
+	netListSim.SetNode(clk0, true);
+
+	assert(Debug::CheckCores(state, netListSim));
+
 	SetNode(state, rdy, 1);
+	netListSim.SetNode(rdy, true);
+
 	SetNode(state, so, 0);
+	netListSim.SetNode(so, false);
+
 	SetNode(state, irq, 1);
+	netListSim.SetNode(irq, true);
+
 	SetNode(state, nmi, 1);
+	netListSim.SetNode(nmi, true);
 
 
 	StabilizeChip(state);
+	netListSim.StabilizeChip();
 
 
 //	{	// Init and reset the new chip
-		netListSim.SetupNodesAndTransistors(netlist_6502_transdefs, netlist_6502_node_is_pullup, vss, vcc);
-
-		netListSim.SetNode(res, false);
-		netListSim.SetNode(clk0, true);
-		std::string state2 = netListSim.GetStateString();
-		netListSim.SetNode(rdy, true);
-		netListSim.SetNode(so, false);
-		netListSim.SetNode(irq, true);
-		netListSim.SetNode(nmi, true);
 
 
-		netListSim.StabilizeChip();
+
 //	}
 
-	assert(state1 == state2);
+	// save both strings out so we can do some investigation
+
 
 	// check chips are same state
 

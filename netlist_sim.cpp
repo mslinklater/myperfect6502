@@ -457,28 +457,6 @@ void StabilizeChip(state_t *state)
  *
  ************************************************************/
 
-void AddBitArrayToStateString(std::string& str, const std::vector<bool>& array)
-{
-	for(bool node : array)
-	{
-		if (node)
-		{
-			str.append("1");
-		}
-		else
-		{
-			str.append("0");
-		}
-	}
-}
-
-void AddNodeNumArrayToStateString(std::string& str, const std::vector<nodenum_t>& array)
-{
-	for(nodenum_t i : array)
-	{
-		str.append(std::to_string(i));
-	}
-}
 
 std::string GetStateString(state_t *state)
 {

@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-D_DEBUG -g -O0 -std=gnu++20 -Wno-write-strings -Wno-unused
 #set(CMAKE_CXX_FLAGS "-D_DEBUG -g -pg -O0 -Wno-write-strings -Wno-unused-result")
 #set(CMAKE_CXX_FLAGS "-D_DEBUG -g -O3 -Wno-write-strings -Wno-unused-result")
 
-set(SOURCE_FILES perfect6502.cpp netlist_sim.cpp)
+set(SOURCE_FILES perfect6502.cpp netlist_sim.cpp debug.cpp)
 
 add_subdirectory("cbmbasic")
 add_subdirectory("netlistsim")
